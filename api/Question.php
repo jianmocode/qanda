@@ -4,7 +4,7 @@
  * 提问数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 19:43:56
+ * 最后修改: 2019-01-27 19:56:03
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\Qanda\Api;
@@ -63,6 +63,11 @@ class Question extends Api {
 	 *			      $query["created_desc"]  按创建时间倒序 DESC 排序
 	 *			      $query["created_asc"]  按创建时间正序 ASC 排序
 	 *			      $query["publish_asc"]  按发布时间正序 ASC 排序
+	 *			      $query["priority_asc"]  按优先级 ASC 排序
+	 *			      $query["agree_desc"]  按赞同量 DESC 排序
+	 *			      $query["view_desc"]  按浏览量 DESC 排序
+	 *			      $query["money_desc"]  按悬赏金额 DESC 排序
+	 *			      $query["coin_desc"]  按悬赏积分 DESC 排序
      *
 	 * @param  array $data  POST 参数
 	 *         	      $data['select'] 选取字段，默认选择 ["name=question_id","name=user_id","name=title","name=summary","name=cover","name=category_ids","name=series_ids","name=tags","name=publish_time","name=coin","name=money","name=coin_view","name=money_view","name=policies","name=policies_detail","name=anonymous","name=view_cnt","name=agree_cnt","name=answer_cnt","name=priority","name=status","name=created_at","name=updated_at","model=%5CXpmsns%5CUser%5CModel%5CUser&name=name&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin","model=%5CXpmsns%5CUser%5CModel%5CUser&name=nickname&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin","model=%5CXpmsns%5CPages%5CModel%5CCategory&name=name&table=category&prefix=xpmsns_pages_&alias=category&type=inWhere","model=%5CXpmsns%5CPages%5CModel%5CSeries&name=name&table=series&prefix=xpmsns_pages_&alias=series&type=inWhere"]
@@ -89,6 +94,11 @@ class Question extends Api {
 	 *			      $data["created_desc"]  按创建时间倒序 DESC 排序
 	 *			      $data["created_asc"]  按创建时间正序 ASC 排序
 	 *			      $data["publish_asc"]  按发布时间正序 ASC 排序
+	 *			      $data["priority_asc"]  按优先级 ASC 排序
+	 *			      $data["agree_desc"]  按赞同量 DESC 排序
+	 *			      $data["view_desc"]  按浏览量 DESC 排序
+	 *			      $data["money_desc"]  按悬赏金额 DESC 排序
+	 *			      $data["coin_desc"]  按悬赏积分 DESC 排序
 	 *
 	 * @return array 提问记录集 {"total":100, "page":1, "perpage":20, data:[{"key":"val"}...], "from":1, "to":1, "prev":false, "next":1, "curr":10, "last":20}
 	 *               data:[{"key":"val"}...] 字段
