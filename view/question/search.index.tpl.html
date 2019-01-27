@@ -80,16 +80,18 @@ use \Xpmse\T;
 										创建时间正序
 									<?php elseif ( $query['order'] == 'publish_asc') :?>
 										发布时间正序
+									<?php elseif ( $query['order'] == 'answer_desc') :?>
+										答案数量倒序
 									<?php elseif ( $query['order'] == 'agree_desc') :?>
-										赞同量
+										赞同数量倒序
 									<?php elseif ( $query['order'] == 'view_desc') :?>
-										浏览量
+										浏览数量倒序
 									<?php elseif ( $query['order'] == 'money_desc') :?>
-										悬赏金额
+										悬赏金额倒序
 									<?php elseif ( $query['order'] == 'coin_desc') :?>
-										悬赏积分
+										悬赏积分倒序
 									<?php elseif ( $query['order'] == 'priority_asc') :?>
-										优先级
+										优先级正序
 									<?php else:?>
 										排序方式
 									<?php endif;?>
@@ -119,28 +121,33 @@ use \Xpmse\T;
 										</a>
 									</li>
 									<li>
+										<a href="javascript:search('order','answer_desc')">
+										   答案数量倒序
+										</a>
+									</li>
+									<li>
 										<a href="javascript:search('order','agree_desc')">
-										   赞同量
+										   赞同数量倒序
 										</a>
 									</li>
 									<li>
 										<a href="javascript:search('order','view_desc')">
-										   浏览量
+										   浏览数量倒序
 										</a>
 									</li>
 									<li>
 										<a href="javascript:search('order','money_desc')">
-										   悬赏金额
+										   悬赏金额倒序
 										</a>
 									</li>
 									<li>
 										<a href="javascript:search('order','coin_desc')">
-										   悬赏积分
+										   悬赏积分倒序
 										</a>
 									</li>
 									<li>
 										<a href="javascript:search('order','priority_asc')">
-										   优先级
+										   优先级正序
 										</a>
 									</li>
 									<li>
