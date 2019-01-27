@@ -104,32 +104,32 @@ use \Xpmse\T;
 							<div class="btn-group pull-right push-20-l" role="group">  
 								<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" >
 									<i class="glyphicon glyphicon-list-alt"></i> 
-									<?=($query['status'] == 'opened') ? '开放' : '' ?>
-									<?=($query['status'] == 'closed') ? '关闭' : '' ?>
-									<?=($query['status'] == 'forbidden') ? '封禁' : '' ?>
-									<?=(empty($query['status'])) ? '状态' : '' ?>
+									<?=($query['status_not'] == 'opened') ? '开放' : '' ?>
+									<?=($query['status_not'] == 'closed') ? '关闭' : '' ?>
+									<?=($query['status_not'] == 'forbidden') ? '封禁' : '' ?>
+									<?=(empty($query['status_not'])) ? '状态' : '' ?>
 									<span class="caret"></span> 
 								</button>
 
 								<ul class="dropdown-menu dropdown-menu-right"  style="min-width: 87px;">
 									<li class="dropdown-header">状态</li>
 									<li>
-										<a href="javascript:search('status','')">
+										<a href="javascript:search('status_not','')">
 										   全部
 										</a>
 									</li>
 									<li >
-										<a href="javascript:search('status','opened')">
+										<a href="javascript:search('status_not','opened')">
 										   开放
 										</a>
 									</li>
 									<li >
-										<a href="javascript:search('status','closed')">
+										<a href="javascript:search('status_not','closed')">
 										   关闭
 										</a>
 									</li>
 									<li >
-										<a href="javascript:search('status','forbidden')">
+										<a href="javascript:search('status_not','forbidden')">
 										   封禁
 										</a>
 									</li>

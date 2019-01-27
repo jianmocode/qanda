@@ -4,7 +4,7 @@
  * 提问数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 18:22:56
+ * 最后修改: 2019-01-27 19:00:53
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\Qanda\Model;
@@ -479,10 +479,11 @@ class Question extends Model {
 	 *			      $query["keyword"] 按关键词查询
 	 *			      $query["question_ids"] 按问题IDS查询 ( IN )
 	 *			      $query["user_id"] 按用户ID查询 ( = )
-	 *			      $query["category_ids"] 按类目查询 ( LIKE )
-	 *			      $query["series_ids"] 按系列查询 ( LIKE )
-	 *			      $query["tags"] 按标签查询 ( LIKE )
+	 *			      $query["category_ids"] 按类目查询 ( LIKE-MULTIPLE )
+	 *			      $query["series_ids"] 按系列查询 ( LIKE-MULTIPLE )
+	 *			      $query["tags"] 按标签查询 ( LIKE-MULTIPLE )
 	 *			      $query["status"] 按状态查询 ( = )
+	 *			      $query["status_not"] 按状态不等于查询 ( <> )
 	 *			      $query["created_desc"]  按创建时间倒序 DESC 排序
 	 *			      $query["created_asc"]  按创建时间正序 ASC 排序
 	 *           
@@ -633,24 +634,59 @@ class Question extends Model {
 			$qb->where("question.user_id", '=', "{$query['user_id']}" );
 		}
 		  
-		// 按类目查询 (LIKE)  
+		// 按类目查询 (LIKE-MULTIPLE)  
 		if ( array_key_exists("category_ids", $query) &&!empty($query['category_ids']) ) {
-			$qb->where("question.category_ids", 'like', "%{$query['category_ids']}%" );
+            $query['category_ids'] = explode(',', $query['category_ids']);
+            $qb->where(function ( $qb ) use($query) {
+                foreach( $query['category_ids'] as $idx=>$val )  {
+                    $val = trim($val);
+                    if ( $idx == 0 ) {
+                        $qb->where("question.category_ids", 'like', "%{$val}%" );
+                    } else {
+                        $qb->orWhere("question.category_ids", 'like', "%{$val}%");
+                    }
+                }
+            });
 		}
 		  
-		// 按系列查询 (LIKE)  
+		// 按系列查询 (LIKE-MULTIPLE)  
 		if ( array_key_exists("series_ids", $query) &&!empty($query['series_ids']) ) {
-			$qb->where("question.series_ids", 'like', "%{$query['series_ids']}%" );
+            $query['series_ids'] = explode(',', $query['series_ids']);
+            $qb->where(function ( $qb ) use($query) {
+                foreach( $query['series_ids'] as $idx=>$val )  {
+                    $val = trim($val);
+                    if ( $idx == 0 ) {
+                        $qb->where("question.series_ids", 'like', "%{$val}%" );
+                    } else {
+                        $qb->orWhere("question.series_ids", 'like', "%{$val}%");
+                    }
+                }
+            });
 		}
 		  
-		// 按标签查询 (LIKE)  
+		// 按标签查询 (LIKE-MULTIPLE)  
 		if ( array_key_exists("tags", $query) &&!empty($query['tags']) ) {
-			$qb->where("question.tags", 'like', "%{$query['tags']}%" );
+            $query['tags'] = explode(',', $query['tags']);
+            $qb->where(function ( $qb ) use($query) {
+                foreach( $query['tags'] as $idx=>$val )  {
+                    $val = trim($val);
+                    if ( $idx == 0 ) {
+                        $qb->where("question.tags", 'like', "%{$val}%" );
+                    } else {
+                        $qb->orWhere("question.tags", 'like', "%{$val}%");
+                    }
+                }
+            });
 		}
 		  
 		// 按状态查询 (=)  
 		if ( array_key_exists("status", $query) &&!empty($query['status']) ) {
 			$qb->where("question.status", '=', "{$query['status']}" );
+		}
+		  
+		// 按状态不等于查询 (<>)  
+		if ( array_key_exists("status_not", $query) &&!empty($query['status_not']) ) {
+			$qb->where("question.status", '<>', "{$query['status_not']}" );
 		}
 		  
 
