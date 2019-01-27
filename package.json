@@ -2,7 +2,7 @@
     "org": "xpmsns",
     "name": "qanda",
     "version": "1.0.0",
-    "cname": "简墨问答",
+    "cname": "简墨知否",
     "image": {
         "color":"/static/icons/app-color.svg",
         "dark":"/static/icons/app-dark.svg",
@@ -16,7 +16,7 @@
     "homepage": "https://www.jianmo.im",
     "menu":[{
         "slug":"xpmsns/qanda/group",
-        "group":"问答"
+        "group":"知否"
     },{
         "slug":"xpmsns/qanda/question/index",
         "name":"提问",
