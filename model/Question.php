@@ -4,7 +4,7 @@
  * 提问数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 19:56:05
+ * 最后修改: 2019-01-27 19:56:59
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\Qanda\Model;
@@ -598,11 +598,11 @@ class Question extends Model {
 	 *			      $query["created_desc"]  按创建时间倒序 DESC 排序
 	 *			      $query["created_asc"]  按创建时间正序 ASC 排序
 	 *			      $query["publish_asc"]  按发布时间正序 ASC 排序
-	 *			      $query["priority_asc"]  按优先级 ASC 排序
 	 *			      $query["agree_desc"]  按赞同量 DESC 排序
 	 *			      $query["view_desc"]  按浏览量 DESC 排序
 	 *			      $query["money_desc"]  按悬赏金额 DESC 排序
 	 *			      $query["coin_desc"]  按悬赏积分 DESC 排序
+	 *			      $query["priority_asc"]  按优先级 ASC 排序
 	 *           
 	 * @return array 提问记录集 {"total":100, "page":1, "perpage":20, data:[{"key":"val"}...], "from":1, "to":1, "prev":false, "next":1, "curr":10, "last":20}
 	 *               	["question_id"],  // 问题ID 
@@ -882,11 +882,6 @@ class Question extends Model {
 			$qb->orderBy("question.publish_time", "asc");
 		}
 
-		// 按优先级 ASC 排序
-		if ( array_key_exists("priority_asc", $query) &&!empty($query['priority_asc']) ) {
-			$qb->orderBy("question.priority", "asc");
-		}
-
 		// 按赞同量 DESC 排序
 		if ( array_key_exists("agree_desc", $query) &&!empty($query['agree_desc']) ) {
 			$qb->orderBy("question.agree_cnt", "desc");
@@ -905,6 +900,11 @@ class Question extends Model {
 		// 按悬赏积分 DESC 排序
 		if ( array_key_exists("coin_desc", $query) &&!empty($query['coin_desc']) ) {
 			$qb->orderBy("question.coin", "desc");
+		}
+
+		// 按优先级 ASC 排序
+		if ( array_key_exists("priority_asc", $query) &&!empty($query['priority_asc']) ) {
+			$qb->orderBy("question.priority", "asc");
 		}
 
 
