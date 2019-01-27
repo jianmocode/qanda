@@ -4,11 +4,11 @@
  * 提问数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 19:00:53
+ * 最后修改: 2019-01-27 19:38:17
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\Qanda\Model;
-                 
+                          
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
@@ -68,6 +68,8 @@ class Question extends Model {
 		$this->putColumn( 'title', $this->type("string", ["length"=>200, "index"=>true, "null"=>true]));
 		// 摘要
 		$this->putColumn( 'summary', $this->type("string", ["length"=>600, "index"=>true, "null"=>true]));
+		// 封面
+		$this->putColumn( 'cover', $this->type("string", ["length"=>600, "json"=>true, "null"=>true]));
 		//  正文
 		$this->putColumn( 'content', $this->type("longText", ["null"=>true]));
 		// 类目
@@ -76,6 +78,22 @@ class Question extends Model {
 		$this->putColumn( 'series_ids', $this->type("string", ["length"=>400, "index"=>true, "json"=>true, "null"=>true]));
 		// 标签
 		$this->putColumn( 'tags', $this->type("string", ["length"=>400, "index"=>true, "json"=>true, "null"=>true]));
+		// 发布时间
+		$this->putColumn( 'publish_time', $this->type("timestamp", ["index"=>true, "null"=>true]));
+		// 悬赏积分
+		$this->putColumn( 'coin', $this->type("integer", ["length"=>1, "index"=>true, "null"=>true]));
+		// 悬赏金额
+		$this->putColumn( 'money', $this->type("integer", ["length"=>1, "index"=>true, "null"=>true]));
+		// 围观积分
+		$this->putColumn( 'coin_view', $this->type("integer", ["length"=>1, "index"=>true, "null"=>true]));
+		// 围观金额
+		$this->putColumn( 'money_view', $this->type("integer", ["length"=>1, "index"=>true, "null"=>true]));
+		// 访问策略
+		$this->putColumn( 'policies', $this->type("string", ["length"=>32, "index"=>true, "default"=>"public", "null"=>true]));
+		// 访问策略详情
+		$this->putColumn( 'policies_detail', $this->type("string", ["length"=>600, "json"=>true, "null"=>true]));
+		// 是否匿名
+		$this->putColumn( 'anonymous', $this->type("integer", ["length"=>1, "index"=>true, "null"=>true]));
 		// 浏览量
 		$this->putColumn( 'view_cnt', $this->type("integer", ["length"=>1, "index"=>true, "null"=>true]));
 		// 赞同量
@@ -122,9 +140,38 @@ class Question extends Model {
 		  			"name" => "封禁",
 		  			"style" => "danger"
 		  		],
+		  		"drafted" => [
+		  			"value" => "drafted",
+		  			"name" => "草稿",
+		  			"style" => "muted"
+		  		],
 			];
 			$rs["_status_name"] = "status";
 			$rs["_status"] = $rs["_status_types"][$rs["status"]];
+		}
+
+		// 格式化: 访问策略
+		// 返回值: "_policies_types" 所有状态表述, "_policies_name" 状态名称,  "_policies" 当前状态表述, "policies" 当前状态数值
+		if ( array_key_exists('policies', $rs ) && !empty($rs['policies']) ) {
+			$rs["_policies_types"] = [
+		  		"public" => [
+		  			"value" => "public",
+		  			"name" => "公开的",
+		  			"style" => "success"
+		  		],
+		  		"partially" => [
+		  			"value" => "partially",
+		  			"name" => "部分可见",
+		  			"style" => "warning"
+		  		],
+		  		"private" => [
+		  			"value" => "private",
+		  			"name" => "私密的",
+		  			"style" => "danger"
+		  		],
+			];
+			$rs["_policies_name"] = "policies";
+			$rs["_policies"] = $rs["_policies_types"][$rs["policies"]];
 		}
 
  
@@ -143,6 +190,7 @@ class Question extends Model {
 	 *                $rs["user_user_id"], // user.user_id
 	 *          	  $rs["title"],  // 标题 
 	 *          	  $rs["summary"],  // 摘要 
+	 *          	  $rs["cover"],  // 封面 
 	 *          	  $rs["content"],  //  正文 
 	 *          	  $rs["category_ids"],  // 类目 
 	 *                $rs["_map_category"][$category_ids[n]]["category_id"], // category.category_id
@@ -150,6 +198,14 @@ class Question extends Model {
 	 *                $rs["_map_series"][$series_ids[n]]["series_id"], // series.series_id
 	 *          	  $rs["tags"],  // 标签 
 	 *                $rs["_map_tag"][$tags[n]]["name"], // tag.name
+	 *          	  $rs["publish_time"],  // 发布时间 
+	 *          	  $rs["coin"],  // 悬赏积分 
+	 *          	  $rs["money"],  // 悬赏金额 
+	 *          	  $rs["coin_view"],  // 围观积分 
+	 *          	  $rs["money_view"],  // 围观金额 
+	 *          	  $rs["policies"],  // 访问策略 
+	 *          	  $rs["policies_detail"],  // 访问策略详情 
+	 *          	  $rs["anonymous"],  // 是否匿名 
 	 *          	  $rs["view_cnt"],  // 浏览量 
 	 *          	  $rs["agree_cnt"],  // 赞同量 
 	 *          	  $rs["answer_cnt"],  // 答案量 
@@ -306,7 +362,7 @@ class Question extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 提问记录MAP {"question_id1":{"key":"value",...}...}
 	 */
-	public function getInByQuestionId($question_ids, $select=["question.question_id","question.title","user.name","user.nickname","category.name","tag.name","question.created_at","question.updated_at"], $order=["question.created_at"=>"desc"] ) {
+	public function getInByQuestionId($question_ids, $select=["question.question_id","question.title","user.name","user.nickname","category.name","tag.name","question.policies","question.status","question.created_at","question.updated_at"], $order=["question.publish_time"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -409,7 +465,7 @@ class Question extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 提问记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["question.question_id","question.title","user.name","user.nickname","category.name","tag.name","question.created_at","question.updated_at"], $order=["question.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["question.question_id","question.title","user.name","user.nickname","category.name","tag.name","question.policies","question.status","question.created_at","question.updated_at"], $order=["question.publish_time"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -473,7 +529,7 @@ class Question extends Model {
 	/**
 	 * 按条件检索提问记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["question.question_id","question.title","user.name","user.nickname","category.name","tag.name","question.created_at","question.updated_at"]
+	 *         	      $query['select'] 选取字段，默认选择 ["question.question_id","question.title","user.name","user.nickname","category.name","tag.name","question.policies","question.status","question.created_at","question.updated_at"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
@@ -484,8 +540,19 @@ class Question extends Model {
 	 *			      $query["tags"] 按标签查询 ( LIKE-MULTIPLE )
 	 *			      $query["status"] 按状态查询 ( = )
 	 *			      $query["status_not"] 按状态不等于查询 ( <> )
+	 *			      $query["policies_not"] 按访问策略不等于查询 ( <> )
+	 *			      $query["policies"] 按访问策略查询 ( = )
+	 *			      $query["coin"] 按悬赏积分查询 ( > )
+	 *			      $query["money"] 按悬赏金额查询 ( > )
+	 *			      $query["coin_view"] 按围观积分查询 ( > )
+	 *			      $query["money_view"] 按围观金额查询 ( > )
+	 *			      $query["anonymous"] 按是否匿名查询 ( = )
+	 *			      $query["before"] 按发布时间之前查询 ( <= )
+	 *			      $query["after"] 按发布时间之后查询 ( >= )
+	 *			      $query["publish_desc"]  按发布时间倒序 DESC 排序
 	 *			      $query["created_desc"]  按创建时间倒序 DESC 排序
 	 *			      $query["created_asc"]  按创建时间正序 ASC 排序
+	 *			      $query["publish_asc"]  按发布时间正序 ASC 排序
 	 *           
 	 * @return array 提问记录集 {"total":100, "page":1, "perpage":20, data:[{"key":"val"}...], "from":1, "to":1, "prev":false, "next":1, "curr":10, "last":20}
 	 *               	["question_id"],  // 问题ID 
@@ -493,6 +560,7 @@ class Question extends Model {
 	 *               	["user_user_id"], // user.user_id
 	 *               	["title"],  // 标题 
 	 *               	["summary"],  // 摘要 
+	 *               	["cover"],  // 封面 
 	 *               	["content"],  //  正文 
 	 *               	["category_ids"],  // 类目 
 	 *               	["category"][$category_ids[n]]["category_id"], // category.category_id
@@ -500,6 +568,14 @@ class Question extends Model {
 	 *               	["series"][$series_ids[n]]["series_id"], // series.series_id
 	 *               	["tags"],  // 标签 
 	 *               	["tag"][$tags[n]]["name"], // tag.name
+	 *               	["publish_time"],  // 发布时间 
+	 *               	["coin"],  // 悬赏积分 
+	 *               	["money"],  // 悬赏金额 
+	 *               	["coin_view"],  // 围观积分 
+	 *               	["money_view"],  // 围观金额 
+	 *               	["policies"],  // 访问策略 
+	 *               	["policies_detail"],  // 访问策略详情 
+	 *               	["anonymous"],  // 是否匿名 
 	 *               	["view_cnt"],  // 浏览量 
 	 *               	["agree_cnt"],  // 赞同量 
 	 *               	["answer_cnt"],  // 答案量 
@@ -595,7 +671,7 @@ class Question extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["question.question_id","question.title","user.name","user.nickname","category.name","tag.name","question.created_at","question.updated_at"] : $query['select'];
+		$select = empty($query['select']) ? ["question.question_id","question.title","user.name","user.nickname","category.name","tag.name","question.policies","question.status","question.created_at","question.updated_at"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
@@ -689,6 +765,56 @@ class Question extends Model {
 			$qb->where("question.status", '<>', "{$query['status_not']}" );
 		}
 		  
+		// 按访问策略不等于查询 (<>)  
+		if ( array_key_exists("policies_not", $query) &&!empty($query['policies_not']) ) {
+			$qb->where("question.policies", '<>', "{$query['policies_not']}" );
+		}
+		  
+		// 按访问策略查询 (=)  
+		if ( array_key_exists("policies", $query) &&!empty($query['policies']) ) {
+			$qb->where("question.policies", '=', "{$query['policies']}" );
+		}
+		  
+		// 按悬赏积分查询 (>)  
+		if ( array_key_exists("coin", $query) &&!empty($query['coin']) ) {
+			$qb->where("question.coin", '>', "{$query['coin']}" );
+		}
+		  
+		// 按悬赏金额查询 (>)  
+		if ( array_key_exists("money", $query) &&!empty($query['money']) ) {
+			$qb->where("question.money", '>', "{$query['money']}" );
+		}
+		  
+		// 按围观积分查询 (>)  
+		if ( array_key_exists("coin_view", $query) &&!empty($query['coin_view']) ) {
+			$qb->where("question.coin_view", '>', "{$query['coin_view']}" );
+		}
+		  
+		// 按围观金额查询 (>)  
+		if ( array_key_exists("money_view", $query) &&!empty($query['money_view']) ) {
+			$qb->where("question.money_view", '>', "{$query['money_view']}" );
+		}
+		  
+		// 按是否匿名查询 (=)  
+		if ( array_key_exists("anonymous", $query) &&!empty($query['anonymous']) ) {
+			$qb->where("question.anonymous", '=', "{$query['anonymous']}" );
+		}
+		  
+		// 按发布时间之前查询 (<=)  
+		if ( array_key_exists("before", $query) &&!empty($query['before']) ) {
+			$qb->where("question.publish_time", '<=', "{$query['before']}" );
+		}
+		  
+		// 按发布时间之后查询 (>=)  
+		if ( array_key_exists("after", $query) &&!empty($query['after']) ) {
+			$qb->where("question.publish_time", '>=', "{$query['after']}" );
+		}
+		  
+
+		// 按发布时间倒序 DESC 排序
+		if ( array_key_exists("publish_desc", $query) &&!empty($query['publish_desc']) ) {
+			$qb->orderBy("question.publish_time", "desc");
+		}
 
 		// 按创建时间倒序 DESC 排序
 		if ( array_key_exists("created_desc", $query) &&!empty($query['created_desc']) ) {
@@ -698,6 +824,11 @@ class Question extends Model {
 		// 按创建时间正序 ASC 排序
 		if ( array_key_exists("created_asc", $query) &&!empty($query['created_asc']) ) {
 			$qb->orderBy("question.created_at", "asc");
+		}
+
+		// 按发布时间正序 ASC 排序
+		if ( array_key_exists("publish_asc", $query) &&!empty($query['publish_asc']) ) {
+			$qb->orderBy("question.publish_time", "asc");
 		}
 
 
@@ -855,10 +986,19 @@ class Question extends Model {
 			"user_id",  // 用户ID
 			"title",  // 标题
 			"summary",  // 摘要
+			"cover",  // 封面
 			"content",  //  正文
 			"category_ids",  // 类目
 			"series_ids",  // 系列
 			"tags",  // 标签
+			"publish_time",  // 发布时间
+			"coin",  // 悬赏积分
+			"money",  // 悬赏金额
+			"coin_view",  // 围观积分
+			"money_view",  // 围观金额
+			"policies",  // 访问策略
+			"policies_detail",  // 访问策略详情
+			"anonymous",  // 是否匿名
 			"view_cnt",  // 浏览量
 			"agree_cnt",  // 赞同量
 			"answer_cnt",  // 答案量

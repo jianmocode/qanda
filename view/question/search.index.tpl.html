@@ -72,10 +72,14 @@ use \Xpmse\T;
 										type="button" data-toggle="dropdown" > 
 									<i class="glyphicon glyphicon-list-alt"></i>
 									<!-- 当前排序 -->
-									<?php if ( $query['order'] == 'created_desc') :?>
+									<?php if ( $query['order'] == 'publish_desc') :?>
+										发布时间倒序
+									<?php elseif ( $query['order'] == 'created_desc') :?>
 										创建时间倒序
 									<?php elseif ( $query['order'] == 'created_asc') :?>
 										创建时间正序
+									<?php elseif ( $query['order'] == 'publish_asc') :?>
+										发布时间正序
 									<?php else:?>
 										排序方式
 									<?php endif;?>
@@ -85,6 +89,11 @@ use \Xpmse\T;
 								<ul class="dropdown-menu dropdown-menu-right" style="min-width: 87px;">
 									<li class="dropdown-header"> 排序方式</li>
 									<li>
+										<a href="javascript:search('order','publish_desc')">
+										   发布时间倒序
+										</a>
+									</li>
+									<li>
 										<a href="javascript:search('order','created_desc')">
 										   创建时间倒序
 										</a>
@@ -92,6 +101,11 @@ use \Xpmse\T;
 									<li>
 										<a href="javascript:search('order','created_asc')">
 										   创建时间正序
+										</a>
+									</li>
+									<li>
+										<a href="javascript:search('order','publish_asc')">
+										   发布时间正序
 										</a>
 									</li>
 									<li>
@@ -107,6 +121,7 @@ use \Xpmse\T;
 									<?=($query['status_not'] == 'opened') ? '开放' : '' ?>
 									<?=($query['status_not'] == 'closed') ? '关闭' : '' ?>
 									<?=($query['status_not'] == 'forbidden') ? '封禁' : '' ?>
+									<?=($query['status_not'] == 'drafted') ? '草稿' : '' ?>
 									<?=(empty($query['status_not'])) ? '状态' : '' ?>
 									<span class="caret"></span> 
 								</button>
@@ -133,8 +148,49 @@ use \Xpmse\T;
 										   封禁
 										</a>
 									</li>
+									<li >
+										<a href="javascript:search('status_not','drafted')">
+										   草稿
+										</a>
+									</li>
 								</ul>
 							</div> <!-- END 状态过滤 -->
+
+							<!-- 访问策略过滤 -->
+							<div class="btn-group pull-right push-20-l" role="group">  
+								<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" >
+									<i class="glyphicon glyphicon-list-alt"></i> 
+									<?=($query['policies'] == 'public') ? '公开的' : '' ?>
+									<?=($query['policies'] == 'partially') ? '部分可见' : '' ?>
+									<?=($query['policies'] == 'private') ? '私密的' : '' ?>
+									<?=(empty($query['policies'])) ? '访问策略' : '' ?>
+									<span class="caret"></span> 
+								</button>
+
+								<ul class="dropdown-menu dropdown-menu-right"  style="min-width: 87px;">
+									<li class="dropdown-header">访问策略</li>
+									<li>
+										<a href="javascript:search('policies','')">
+										   全部
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('policies','public')">
+										   公开的
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('policies','partially')">
+										   部分可见
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('policies','private')">
+										   私密的
+										</a>
+									</li>
+								</ul>
+							</div> <!-- END 访问策略过滤 -->
 
 
 						</div><!-- END col-xs-7 -->
@@ -151,6 +207,8 @@ use \Xpmse\T;
 								<th class="font-w300"> 用户 </th>
 								<th class="font-w300"> 类目 </th>
 								<th class="font-w300"> 标签 </th>
+								<th class="font-w300"> 访问策略 </th>
+								<th class="font-w300"> 状态 </th>
 								<th class="font-w300"> 更新时间 </th>
 							</tr>
 						</thead>
@@ -175,6 +233,12 @@ use \Xpmse\T;
 									<?php $rs["_map_tag"]= &$response["tag"]; $v=null; $v=T::s("{% for idx in tags %} {{_map_tag[idx].name}} {% endfor %}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
+									<span class="text-<?=$rs['_policies']['style']?>"><?=$rs['_policies']['name'] ? $rs['_policies']['name']  : $rs['policies'] ?></span>
+								</td>
+								<td class="font-w300">
+									<span class="text-<?=$rs['_status']['style']?>"><?=$rs['_status']['name'] ? $rs['_status']['name']  : $rs['status'] ?></span>
+								</td>
+								<td class="font-w300">
 									<?php $v=null; $v=T::s("{{ update_at  ? update_at | date('Y年m月d日 @H:i') : created_at | date('Y年m月d日 @H:i') }}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 							</tr>
@@ -183,7 +247,7 @@ use \Xpmse\T;
 						</tbody>
 
 						<tfoot>
-							<tr><td colspan="6"> <nav class="pull-right">
+							<tr><td colspan="8"> <nav class="pull-right">
 
 								<ul class="pagination">
 									<?php if ($response['prev'] !== false): ?>

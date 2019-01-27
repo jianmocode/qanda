@@ -89,6 +89,35 @@ use \Xpmse\T;
 
 
 
+	<!-- 单图上传: 封面 (cover) 开始  -->
+	<div class="xpmse-image  " name="cover">
+		<div class="form-group " >
+			<label class="col-xs-2 control-label" for="cover">封面</label>
+			<div class="col-xs-8">
+		   		<div name="cover" class="file-uploader rounded rounded-4 push-10-t"
+					data-api='/_a/mina/uploader/upload?type=image'
+					data-title=''
+					data-previews=""
+					data-width="190"
+					data-height="105"
+					data-icon="fa fa-image" 
+					data-placeholder="" 
+					data-allow-types="image/png,image/jpg,image/jpeg,image/gif"
+					data-maxsize="20"
+					data-progress="yes"
+					data-cropable="yes"
+					data-draggable="yes"
+					data-src="<?=T::v('<%=cover.url%>', $rs )?>"
+					data-path="<?=T::v('<%=cover.path%>', $rs )?>"
+					></div>
+				<div class="help-block"></div>
+			</div>
+		</div> 
+	</div><!-- END 单图上传: 封面 (cover) -->
+
+
+
+
 	<!-- 富文本(summernote):  正文 (content) 开始  -->
 	<div class="form-group     ">
 		<label class="col-xs-2 control-label" for="content"> 正文</label>
@@ -128,6 +157,59 @@ use \Xpmse\T;
     		}
 		});
 	</script>
+
+
+
+<!-- 单行时间日期:  发布时间 (publish_time) 开始  -->
+<div class="form-group   ">
+<label class="col-xs-2 control-label" for="publish_time__date"> 发布时间</label>
+<div class="col-xs-4">
+<input 
+ name="publish_time__date" id="publish_time__date"
+
+class="js-datepicker form-control  input-lg" type="text" 
+data-date-format="yyyy年mm月dd日" 
+placeholder="请选择日期 "
+ value="<?=T::v('<%=publish_time | toDate%>', $rs )?>"  />
+
+<div class="help-block"></div>
+</div>
+ <div class="col-xs-4">
+<input 
+name="publish_time__time" id="publish_time__time"
+class="js-masked-time form-control  input-lg"  type="text" 
+ placeholder="请输入时间"
+value="<?=T::v('<%=publish_time | toTime%>', $rs )?>" /> 
+ </div>
+<input name="publish_time" id="publish_time" type="hidden" value="<?=T::v('<%=publish_time | toDateTime%>', $rs )?>" />
+<script type="text/javascript">
+$(function(){
+function publish_time_change() {
+var tm = $('input[name=publish_time__time').val();
+ tm = tm.replace('@ ', '');
+tm = tm.replace('时', ':');
+tm = tm.replace('分', ':');
+ tm = tm = tm + '00';
+var dt = $('input[name=publish_time__date]').val();
+dt = dt.replace('年', '-');
+dt = dt.replace('月', '-');
+ dt = dt.replace('日', '');
+var datetime = dt + ' ' + tm;
+$('input[name=publish_time]').val( datetime );
+}
+$('input[name=publish_time__date]').on("change", function( e ){
+ publish_time_change();
+
+});
+
+ $('input[name=publish_time__time').on("change", function( e ){
+
+publish_time_change();
+});
+});
+
+ </script>
+</div><!-- END 单行时间日期:  发布时间 (publish_time) -->
 
 
 
@@ -249,6 +331,134 @@ use \Xpmse\T;
         </script>
         	</div><!-- END 下拉选择(动态数据): 标签 (tags) -->
 
+	<!-- 单行文本: 悬赏积分 (coin) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="coin">悬赏积分</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="coin" name="coin" 
+				placeholder=""  
+				value="<?=T::v('<%=coin | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">单位: 个</div>
+		</div>
+	</div><!-- END 单行文本: 悬赏积分 (coin) -->
+
+	<!-- 单行文本: 悬赏金额 (money) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="money">悬赏金额</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="money" name="money" 
+				placeholder=""  
+				value="<?=T::v('<%=money | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">单位: 分</div>
+		</div>
+	</div><!-- END 单行文本: 悬赏金额 (money) -->
+
+	<!-- 单行文本: 围观积分 (coin_view) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="coin_view">围观积分</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="coin_view" name="coin_view" 
+				placeholder=""  
+				value="<?=T::v('<%=coin_view | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">单位: 个</div>
+		</div>
+	</div><!-- END 单行文本: 围观积分 (coin_view) -->
+
+	<!-- 单行文本: 围观金额 (money_view) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="money_view">围观金额</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="money_view" name="money_view" 
+				placeholder=""  
+				value="<?=T::v('<%=money_view | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">单位: 分</div>
+		</div>
+	</div><!-- END 单行文本: 围观金额 (money_view) -->
+
+
+	<!-- 单选框: 访问策略 (policies) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="policies">访问策略</label>
+		<div class="col-xs-8">
+			<?php if (is_null($rs["policies"])) { $rs["policies"] = "public"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="policies" data-uncheck-value="public" value="public" <?=("public" == $rs["policies"]) ? "checked" : ""?> > <span></span> 公开的</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="policies" data-uncheck-value="partially" value="partially" <?=("partially" == $rs["policies"]) ? "checked" : ""?> > <span></span> 部分可见</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="policies" data-uncheck-value="private" value="private" <?=("private" == $rs["policies"]) ? "checked" : ""?> > <span></span> 私密的</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 访问策略 (policies) 开始  -->
+
+
+
+
+    <!-- JSON编辑器(json-editor): 访问策略详情 (policies_detail) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="policies_detail" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">访问策略详情</label>
+			<div class="col-xs-8">
+                
+                                <textarea class="form-control input-lg " name="policies_detail"  type="text"  rows="6" 
+                    
+                    placeholder=""><?=T::v('<%=policies_detail | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols" value="policies_detail" />
+                			</div>
+			<div class="col-xs-2 push-10-t"></div>
+		</div>
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block"></div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 访问策略详情 (policies_detail)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="policies_detail"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: false,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
+
+
+	<!-- 单选框: 是否匿名 (anonymous) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="anonymous">是否匿名</label>
+		<div class="col-xs-8">
+			<?php if (is_null($rs["anonymous"])) { $rs["anonymous"] = "0"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="anonymous" data-uncheck-value="0" value="0" <?=("0" == $rs["anonymous"]) ? "checked" : ""?> > <span></span> 匿名</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="anonymous" data-uncheck-value="1" value="1" <?=("1" == $rs["anonymous"]) ? "checked" : ""?> > <span></span>  不匿名</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 是否匿名 (anonymous) 开始  -->
+
 	<!-- 单行文本: 浏览量 (view_cnt) 开始  -->
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="view_cnt">浏览量</label>
@@ -310,6 +520,7 @@ use \Xpmse\T;
 <label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="opened" value="opened" <?=("opened" == $rs["status"]) ? "checked" : ""?> > <span></span> 开放</label>
 <label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="closed" value="closed" <?=("closed" == $rs["status"]) ? "checked" : ""?> > <span></span>  关闭</label>
 <label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="forbidden" value="forbidden" <?=("forbidden" == $rs["status"]) ? "checked" : ""?> > <span></span>  封禁</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="drafted" value="drafted" <?=("drafted" == $rs["status"]) ? "checked" : ""?> > <span></span> 草稿</label>
 			<div class="help-block"></div>
 		</div>
 	</div><!-- END 单选框: 状态 (status) 开始  -->

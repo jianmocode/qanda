@@ -4,11 +4,11 @@
  * 提问数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 19:00:52
+ * 最后修改: 2019-01-27 19:38:16
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\Qanda\Api;
-                 
+                          
 
 use \Xpmse\Loader\App;
 use \Xpmse\Excp;
@@ -39,7 +39,7 @@ class Question extends Api {
 	/**
 	 * 根据条件检索提问记录
 	 * @param  array $query GET 参数
-	 *         	      $query['select'] 选取字段，默认选择 ["question.question_id","question.user_id","question.title","question.summary","question.category_ids","question.series_ids","question.tags","question.view_cnt","question.agree_cnt","question.answer_cnt","question.priority","question.status","question.created_at","question.updated_at","user.name","user.nickname","category.name","series.name"]
+	 *         	      $query['select'] 选取字段，默认选择 ["question.question_id","question.user_id","question.title","question.summary","question.cover","question.category_ids","question.series_ids","question.tags","question.publish_time","question.coin","question.money","question.coin_view","question.money_view","question.policies","question.policies_detail","question.anonymous","question.view_cnt","question.agree_cnt","question.answer_cnt","question.priority","question.status","question.created_at","question.updated_at","user.name","user.nickname","category.name","series.name"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
@@ -50,11 +50,22 @@ class Question extends Api {
 	 *			      $query["tags"] 按标签查询 ( AND LIKE-MULTIPLE )
 	 *			      $query["status"] 按状态查询 ( AND = )
 	 *			      $query["status_not"] 按状态查询 ( AND <> )
+	 *			      $query["policies_not"] 按访问策略查询 ( AND <> )
+	 *			      $query["policies"] 按访问策略查询 ( AND = )
+	 *			      $query["coin"] 按悬赏积分查询 ( AND > )
+	 *			      $query["money"] 按悬赏金额查询 ( AND > )
+	 *			      $query["coin_view"] 按围观积分查询 ( AND > )
+	 *			      $query["money_view"] 按围观金额查询 ( AND > )
+	 *			      $query["anonymous"] 按是否匿名查询 ( AND = )
+	 *			      $query["before"] 按发布时间查询 ( AND <= )
+	 *			      $query["after"] 按发布时间查询 ( AND >= )
+	 *			      $query["publish_desc"]  按发布时间倒序 DESC 排序
 	 *			      $query["created_desc"]  按创建时间倒序 DESC 排序
 	 *			      $query["created_asc"]  按创建时间正序 ASC 排序
+	 *			      $query["publish_asc"]  按发布时间正序 ASC 排序
      *
 	 * @param  array $data  POST 参数
-	 *         	      $data['select'] 选取字段，默认选择 ["name=question_id","name=user_id","name=title","name=summary","name=category_ids","name=series_ids","name=tags","name=view_cnt","name=agree_cnt","name=answer_cnt","name=priority","name=status","name=created_at","name=updated_at","model=%5CXpmsns%5CUser%5CModel%5CUser&name=name&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin","model=%5CXpmsns%5CUser%5CModel%5CUser&name=nickname&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin","model=%5CXpmsns%5CPages%5CModel%5CCategory&name=name&table=category&prefix=xpmsns_pages_&alias=category&type=inWhere","model=%5CXpmsns%5CPages%5CModel%5CSeries&name=name&table=series&prefix=xpmsns_pages_&alias=series&type=inWhere"]
+	 *         	      $data['select'] 选取字段，默认选择 ["name=question_id","name=user_id","name=title","name=summary","name=cover","name=category_ids","name=series_ids","name=tags","name=publish_time","name=coin","name=money","name=coin_view","name=money_view","name=policies","name=policies_detail","name=anonymous","name=view_cnt","name=agree_cnt","name=answer_cnt","name=priority","name=status","name=created_at","name=updated_at","model=%5CXpmsns%5CUser%5CModel%5CUser&name=name&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin","model=%5CXpmsns%5CUser%5CModel%5CUser&name=nickname&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin","model=%5CXpmsns%5CPages%5CModel%5CCategory&name=name&table=category&prefix=xpmsns_pages_&alias=category&type=inWhere","model=%5CXpmsns%5CPages%5CModel%5CSeries&name=name&table=series&prefix=xpmsns_pages_&alias=series&type=inWhere"]
 	 *         	      $data['page'] 页码，默认为 1
 	 *         	      $data['perpage'] 每页显示记录数，默认为 20
 	 *			      $data["keyword"] 按关键词查询
@@ -65,8 +76,19 @@ class Question extends Api {
 	 *			      $data["tags"] 按标签查询 ( AND LIKE-MULTIPLE )
 	 *			      $data["status"] 按状态查询 ( AND = )
 	 *			      $data["status_not"] 按状态查询 ( AND <> )
+	 *			      $data["policies_not"] 按访问策略查询 ( AND <> )
+	 *			      $data["policies"] 按访问策略查询 ( AND = )
+	 *			      $data["coin"] 按悬赏积分查询 ( AND > )
+	 *			      $data["money"] 按悬赏金额查询 ( AND > )
+	 *			      $data["coin_view"] 按围观积分查询 ( AND > )
+	 *			      $data["money_view"] 按围观金额查询 ( AND > )
+	 *			      $data["anonymous"] 按是否匿名查询 ( AND = )
+	 *			      $data["before"] 按发布时间查询 ( AND <= )
+	 *			      $data["after"] 按发布时间查询 ( AND >= )
+	 *			      $data["publish_desc"]  按发布时间倒序 DESC 排序
 	 *			      $data["created_desc"]  按创建时间倒序 DESC 排序
 	 *			      $data["created_asc"]  按创建时间正序 ASC 排序
+	 *			      $data["publish_asc"]  按发布时间正序 ASC 排序
 	 *
 	 * @return array 提问记录集 {"total":100, "page":1, "perpage":20, data:[{"key":"val"}...], "from":1, "to":1, "prev":false, "next":1, "curr":10, "last":20}
 	 *               data:[{"key":"val"}...] 字段
@@ -75,6 +97,7 @@ class Question extends Api {
 	*               	["user_user_id"], // user.user_id
 	 *               	["title"],  // 标题 
 	 *               	["summary"],  // 摘要 
+	 *               	["cover"],  // 封面 
 	 *               	["content"],  //  正文 
 	 *               	["category_ids"],  // 类目 
 	*               	["category"][$category_ids[n]]["category_id"], // category.category_id
@@ -82,6 +105,14 @@ class Question extends Api {
 	*               	["series"][$series_ids[n]]["series_id"], // series.series_id
 	 *               	["tags"],  // 标签 
 	*               	["tag"][$tags[n]]["name"], // tag.name
+	 *               	["publish_time"],  // 发布时间 
+	 *               	["coin"],  // 悬赏积分 
+	 *               	["money"],  // 悬赏金额 
+	 *               	["coin_view"],  // 围观积分 
+	 *               	["money_view"],  // 围观金额 
+	 *               	["policies"],  // 访问策略 
+	 *               	["policies_detail"],  // 访问策略详情 
+	 *               	["anonymous"],  // 是否匿名 
 	 *               	["view_cnt"],  // 浏览量 
 	 *               	["agree_cnt"],  // 赞同量 
 	 *               	["answer_cnt"],  // 答案量 
@@ -182,7 +213,7 @@ class Question extends Api {
 		$data = array_merge( $query, $data );
 
 		// 读取字段
-		$select = empty($data['select']) ? ["question.question_id","question.user_id","question.title","question.summary","question.category_ids","question.series_ids","question.tags","question.view_cnt","question.agree_cnt","question.answer_cnt","question.priority","question.status","question.created_at","question.updated_at","user.name","user.nickname","category.name","series.name"] : $data['select'];
+		$select = empty($data['select']) ? ["question.question_id","question.user_id","question.title","question.summary","question.cover","question.category_ids","question.series_ids","question.tags","question.publish_time","question.coin","question.money","question.coin_view","question.money_view","question.policies","question.policies_detail","question.anonymous","question.view_cnt","question.agree_cnt","question.answer_cnt","question.priority","question.status","question.created_at","question.updated_at","user.name","user.nickname","category.name","series.name"] : $data['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
