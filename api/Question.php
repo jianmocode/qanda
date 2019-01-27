@@ -4,11 +4,11 @@
  * 提问数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 19:41:10
+ * 最后修改: 2019-01-27 19:43:56
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\Qanda\Api;
-                           
+                            
 
 use \Xpmse\Loader\App;
 use \Xpmse\Excp;
@@ -118,6 +118,7 @@ class Question extends Api {
 	 *               	["answer_cnt"],  // 答案量 
 	 *               	["priority"],  // 优先级 
 	 *               	["status"],  // 状态 
+	 *               	["history"],  // 修改历史 
 	 *               	["created_at"],  // 创建时间 
 	 *               	["updated_at"],  // 更新时间 
 	*               	["user_created_at"], // user.created_at

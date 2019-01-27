@@ -4,11 +4,11 @@
  * 提问数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 19:41:11
+ * 最后修改: 2019-01-27 19:43:57
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\Qanda\Model;
-                           
+                            
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
@@ -116,6 +116,8 @@ class Question extends Model {
 		$this->putColumn( 'priority', $this->type("integer", ["length"=>1, "index"=>true, "null"=>true]));
 		// 状态
 		$this->putColumn( 'status', $this->type("string", ["length"=>32, "index"=>true, "null"=>true]));
+		// 修改历史
+		$this->putColumn( 'history', $this->type("longText", ["json"=>true, "null"=>true]));
 
 		return $this;
 	}
@@ -228,6 +230,7 @@ class Question extends Model {
 	 *          	  $rs["answer_cnt"],  // 答案量 
 	 *          	  $rs["priority"],  // 优先级 
 	 *          	  $rs["status"],  // 状态 
+	 *          	  $rs["history"],  // 修改历史 
 	 *          	  $rs["created_at"],  // 创建时间 
 	 *          	  $rs["updated_at"],  // 更新时间 
 	 *                $rs["user_created_at"], // user.created_at
@@ -623,6 +626,7 @@ class Question extends Model {
 	 *               	["answer_cnt"],  // 答案量 
 	 *               	["priority"],  // 优先级 
 	 *               	["status"],  // 状态 
+	 *               	["history"],  // 修改历史 
 	 *               	["created_at"],  // 创建时间 
 	 *               	["updated_at"],  // 更新时间 
 	 *               	["user_created_at"], // user.created_at
@@ -1046,6 +1050,7 @@ class Question extends Model {
 			"answer_cnt",  // 答案量
 			"priority",  // 优先级
 			"status",  // 状态
+			"history",  // 修改历史
 			"created_at",  // 创建时间
 			"updated_at",  // 更新时间
 		];

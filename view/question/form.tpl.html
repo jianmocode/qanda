@@ -525,6 +525,57 @@ publish_time_change();
 		</div>
 	</div><!-- END 单选框: 状态 (status) 开始  -->
 
+
+
+
+    <!-- JSON编辑器(json-editor): 修改历史 (history) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="history" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">修改历史</label>
+			<div class="col-xs-8">
+                
+                                <textarea class="form-control input-lg disabled" name="history"  type="text"  rows="6" 
+                    disabled
+                    placeholder=""><?=T::v('<%=history | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols" value="history" />
+                			</div>
+			<div class="col-xs-2 push-10-t"></div>
+		</div>
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block"></div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 修改历史 (history)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="history"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: true,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
+
 				<!--  提交按钮 -->
 				<div class="block block-quickpanel sidebar-mini">
 					<div class="block-quickpanel-content" >
