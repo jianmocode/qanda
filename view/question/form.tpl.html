@@ -1,0 +1,551 @@
+<?php 
+use \Xpmse\Loader\App; 
+use \Xpmse\Utils;
+use \Xpmse\T;
+?>
+<style type="text/css">
+	.form {
+		padding-top: 60px;
+		padding-bottom: 60px;
+	}
+</style>
+
+
+<!-- Page Content -->
+<div class="content"> 
+	<div class="block block-bordered " >
+		<div class="block-header remove-margin" >
+
+			<h3 class="block-title" >
+				<a href="<?=App::R('question', 'index')?>" class="text-default">
+                    <i class="fa fa-arrow-circle-o-left"></i> 
+                    提问列表 
+                </a> / <?=$action_name?> 
+			</h3>
+			
+		</div> <!-- END block-header -->
+
+		<div class="block-content form question-content js-draggable-items" >
+
+			<form class="form-horizontal question-form form-lg" action= '<?=App::NR("question", "save");?>' >
+
+				<!-- 隐藏域 -->
+				<input type="hidden" name="question_id" value="<?=$rs['question_id']?>" >
+	
+
+
+ 
+	<!-- 下拉选择(动态数据): 用户ID (user_id) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="user_id">用户ID</label>
+		<div class="col-xs-8"> 
+			<select class="js-select2 form-control input-lg   "  style="width: 100%;" 
+					id="user_id" name="user_id" 
+					data-language="zh-CN"
+					data-param-cancelable="0"
+					data-param-cancel="取消选择"
+					data-param-model="\Xpmsns\User\Model\User"
+					data-param-table="user"
+					data-param-fields="user_id,name,nickname,mobile"
+					data-param-style="{{name ? name : nickname }} ( ID: {{user_id}}  手机: {{mobile}})"
+					data-param-option="user_id"
+					data-param-default=""
+					data-ajax-url="/_a/mina/helper/select2?method=get"
+					data-preload-url="/_a/mina/helper/select2?method=get&preload=<?=T::v('<%=user_id | join(\',\')%>', $rs )?>"
+					data-placeholder=""  >
+				<option></option>
+			</select>
+			<div class="help-block"></div>
+		</div>
+			</div><!-- END 下拉选择(动态数据): 用户ID (user_id) -->
+
+	<!-- 单行文本: 标题 (title) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="title">标题</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="title" name="title" 
+				placeholder="请填写问题标题"  
+				value="<?=T::v('<%=title | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单行文本: 标题 (title) -->
+
+
+
+	<!-- 文本域: 摘要 (summary) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="summary">摘要</label>
+		<div class="col-xs-8">
+			<textarea class="form-control input-lg "   
+				type="text" 
+				id="summary" name="summary" rows="4"
+				placeholder="请填写问题摘要"><?=T::v('<%=summary  | e(\'html\')%>', $rs )?></textarea> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 文本域: 摘要 (summary) -->
+
+
+
+
+	<!-- 富文本(summernote):  正文 (content) 开始  -->
+	<div class="form-group     ">
+		<label class="col-xs-2 control-label" for="content"> 正文</label>
+		<div class="col-xs-8">
+			<textarea class="js-summernote" name="content" id="content" placeholder="问题正文" ><?=T::v('<%=content | e(\'html\')%>', $rs )?></textarea>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 富文本(summernote):  正文 (content) -->
+	<script type="text/javascript">
+		// Init full text editor
+		$('.js-summernote[name=content]').summernote({
+			lang: 'zh-CN',
+			height: 300,
+			minHeight: null,
+			maxHeight: null,
+			callbacks: {
+    			onImageUpload: function(files) {
+    				var that = this;
+    				for(var i = files.length - 1; i >= 0; i--) {
+    					var file = files[i];
+    					var form_data = new FormData();
+						form_data.append('file', file);
+						$.ajax({
+							data: form_data,
+							dataType:'json',
+							type: "POST",
+							url: '/_a/mina/uploader/upload?type=image',
+							cache: false,
+							contentType: false,
+							processData: false,
+							success: function( rs ) {
+							    $(that).summernote('editor.insertImage', rs['url']);
+							}
+						});
+    				}
+    			}
+    		}
+		});
+	</script>
+
+
+
+ 
+	<!-- 下拉选择(动态数据): 类目 (category_ids) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="category_ids">类目</label>
+		<div class="col-xs-8"> 
+			<select class="js-select2 form-control input-lg   "  style="width: 100%;" 
+					id="category_ids" name="category_ids" 
+					data-language="zh-CN"
+					data-param-cancelable="1"
+					data-param-cancel="取消选择"
+					data-param-model="\Xpmsns\Pages\Model\Category"
+					data-param-table="category"
+					data-param-fields="category_id,name"
+					data-param-style="{{name}} ( ID: {{category_id}})"
+					data-param-option="category_id"
+					data-param-default=""
+					data-ajax-url="/_a/mina/helper/select2?method=get"
+					data-preload-url="/_a/mina/helper/select2?method=get&preload=<?=T::v('<%=category_ids | join(\',\')%>', $rs )?>"
+					data-placeholder=""  multiple data-select2-multiple=1  >
+				<option></option>
+			</select>
+			<div class="help-block"></div>
+		</div>
+		 
+		<script type="text/javascript">
+		$(function(){
+			// 取消选择
+			$('select[name=category_ids]').on("select2:select", function( e ){
+				var data = e.params.data || {};
+				id = data.id || '';
+				if ( '__cancel' ==  data.id ) {
+					$(this).select2("val", "");
+				}
+			});
+		});
+        </script>
+        	</div><!-- END 下拉选择(动态数据): 类目 (category_ids) -->
+
+
+
+ 
+	<!-- 下拉选择(动态数据): 系列 (series_ids) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="series_ids">系列</label>
+		<div class="col-xs-8"> 
+			<select class="js-select2 form-control input-lg selected-inline  "  style="width: 100%;" 
+					id="series_ids" name="series_ids" 
+					data-language="zh-CN"
+					data-param-cancelable="1"
+					data-param-cancel="取消选择"
+					data-param-model="\Xpmsns\Pages\Model\Series"
+					data-param-table="series"
+					data-param-fields="series_id,name"
+					data-param-style="{{name}} ( ID: {{series_id}})"
+					data-param-option="series_id"
+					data-param-default=""
+					data-ajax-url="/_a/mina/helper/select2?method=get"
+					data-preload-url="/_a/mina/helper/select2?method=get&preload=<?=T::v('<%=series_ids | join(\',\')%>', $rs )?>"
+					data-placeholder=""  multiple data-select2-multiple=1  >
+				<option></option>
+			</select>
+			<div class="help-block"></div>
+		</div>
+		 
+		<script type="text/javascript">
+		$(function(){
+			// 取消选择
+			$('select[name=series_ids]').on("select2:select", function( e ){
+				var data = e.params.data || {};
+				id = data.id || '';
+				if ( '__cancel' ==  data.id ) {
+					$(this).select2("val", "");
+				}
+			});
+		});
+        </script>
+        	</div><!-- END 下拉选择(动态数据): 系列 (series_ids) -->
+
+
+
+ 
+	<!-- 下拉选择(动态数据): 标签 (tags) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="tags">标签</label>
+		<div class="col-xs-8"> 
+			<select class="js-select2 form-control input-lg   "  style="width: 100%;" 
+					id="tags" name="tags" 
+					data-language="zh-CN"
+					data-param-cancelable="1"
+					data-param-cancel="取消选择"
+					data-param-model="\Xpmsns\Pages\Model\Tag"
+					data-param-table="tag"
+					data-param-fields="name"
+					data-param-style="{{name}}"
+					data-param-option="name"
+					data-param-default=""
+					data-ajax-url="/_a/mina/helper/select2?method=get"
+					data-preload-url="/_a/mina/helper/select2?method=get&preload=<?=T::v('<%=tags | join(\',\')%>', $rs )?>"
+					data-placeholder=""  multiple data-select2-multiple=1  >
+				<option></option>
+			</select>
+			<div class="help-block"></div>
+		</div>
+		 
+		<script type="text/javascript">
+		$(function(){
+			// 取消选择
+			$('select[name=tags]').on("select2:select", function( e ){
+				var data = e.params.data || {};
+				id = data.id || '';
+				if ( '__cancel' ==  data.id ) {
+					$(this).select2("val", "");
+				}
+			});
+		});
+        </script>
+        	</div><!-- END 下拉选择(动态数据): 标签 (tags) -->
+
+	<!-- 单行文本: 浏览量 (view_cnt) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="view_cnt">浏览量</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg disabled"  disabled
+				type="text" 
+				id="view_cnt" name="view_cnt" 
+				placeholder=""  
+				value="<?=T::v('<%=view_cnt | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单行文本: 浏览量 (view_cnt) -->
+
+	<!-- 单行文本: 赞同量 (agree_cnt) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="agree_cnt">赞同量</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg disabled"  disabled
+				type="text" 
+				id="agree_cnt" name="agree_cnt" 
+				placeholder=""  
+				value="<?=T::v('<%=agree_cnt | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单行文本: 赞同量 (agree_cnt) -->
+
+	<!-- 单行文本: 答案量 (answer_cnt) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="answer_cnt">答案量</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg disabled"  disabled
+				type="text" 
+				id="answer_cnt" name="answer_cnt" 
+				placeholder=""  
+				value="<?=T::v('<%=answer_cnt | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单行文本: 答案量 (answer_cnt) -->
+
+	<!-- 单行文本: 优先级 (priority) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="priority">优先级</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="priority" name="priority" 
+				placeholder="填写排序数据"  
+				value="<?=T::v('<%=priority | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">数值越小, 顺序越靠前</div>
+		</div>
+	</div><!-- END 单行文本: 优先级 (priority) -->
+
+
+	<!-- 单选框: 状态 (status) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="status">状态</label>
+		<div class="col-xs-8">
+			<?php if (is_null($rs["status"])) { $rs["status"] = "opened"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="opened" value="opened" <?=("opened" == $rs["status"]) ? "checked" : ""?> > <span></span> 开放</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="closed" value="closed" <?=("closed" == $rs["status"]) ? "checked" : ""?> > <span></span>  关闭</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="forbidden" value="forbidden" <?=("forbidden" == $rs["status"]) ? "checked" : ""?> > <span></span>  封禁</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 状态 (status) 开始  -->
+
+				<!--  提交按钮 -->
+				<div class="block block-quickpanel sidebar-mini">
+					<div class="block-quickpanel-content" >
+						<div class="form-group">
+
+							<!-- 功能组 -->
+							<div class="col-xs-2 push-20-t text-left">
+								<a href="<?=App::R('question', 'index')?>"
+									class="btn btn-lg btn-primary font-w300 btn-minw push-20-l user-action fn-back" >
+									<i class="fa fa-angle-double-left push-5-r"></i> 提问列表 
+								</a>
+							</div>
+							<div class="col-xs-8 push-20-t text-center">
+								<button  
+									type="submit" 
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-20-r fn-action fn-save  ">
+										<i class="fa fa-save push-5-r"></i> 保存
+								</button>
+
+								<button  
+									type="button" 
+									data-param-id="<?=$rs['question_id']?>"
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-50-r fn-action fn-saved-only fn-duplicate  ">
+										<i class="fa fa-files-o push-5-r"></i> 复制
+								</button>
+
+								<button 
+									type="button"
+									class="btn btn-lg btn-danger btn-minw ajax-confirm fn-action fn-saved-only fn-remove"
+									confirm-title="请确认删除提问 "
+						            confirm-content="您确定删除提问 <strong><?=$rs['name=title']?>(<?=$rs['question_id']?> )</strong>"
+						            confirm-dismiss = "取消"
+						            confirm-submit= "确定"
+						            confirm-action="<?=App::NR('question','remove')?>"
+						            event-before="
+										function( btn, modal ) {
+											$('button', modal)
+												.addClass('disabled')
+												.attr('disabled', 'disabled');
+										}
+									"
+									event-done="
+										function( data, btn, modal) {
+											$('button', modal)
+												.removeClass('disabled')
+												.removeAttr('disabled');
+										}
+									"
+							        event-success="
+										function(btn, modal) {
+											success('提问删除成功');
+											setTimeout(function(){
+												window.location = '<?=App::R('question','index')?>';
+											}, 1000);
+										}
+									"
+									event-error="
+										function( data, btn, modal) {
+											failure( '提问删除失败 ('+ data['message'] + ')');
+											return true;
+										}
+									"
+
+									data-param-question_id="<?=$rs['question_id']?>" 
+	
+									 >
+										<i class="fa fa-minus-circle push-5-r"></i> 删除
+								</button>
+
+							</div>
+						</div>
+						<div class="bg-primary text-white text-center bottom-line"></div>	
+					</div>
+				</div> <!-- END 提交按钮 -->
+
+			</form>
+		</div> <!-- END block-content form -->
+	</div> <!-- END block block-bordered -->
+</div><!-- END content -->
+
+
+
+
+
+<script type="text/javascript">
+function pending( message ) {
+	$('.fn-action')
+		.addClass('disabled')
+		.attr('disabled', 'disabled');
+	App.loading({message:message}).show();
+}
+
+
+function success( message ) {
+	App.notify( message );
+}
+
+function failure( message,  validation ) {
+	validation = validation  || null;
+	message = message || null;
+
+	if ( typeof message == 'object' ) {
+		validation.showErrors(message);
+		return;
+	}
+
+	if ( message != null ) {
+		App.notify( message, 'fa fa-times', 'danger' );
+	}
+}
+
+function done() {
+	App.loading().hide();
+	$('.fn-action')
+		.removeClass('disabled')
+		.removeAttr('disabled');
+}
+
+
+/**
+ * 保存表单
+ */
+function save( form, validation ) {
+
+	var api =$(form).attr("action");
+
+	try {
+		var data = $(form).serializeData(true);
+	} catch( e  ){
+		console.log( e );
+		return ;
+	}
+
+	pending('保存中, 请稍候...');
+	// POST 数据
+	jQuery.post( api, data, function( data, textStatus, xhr) {
+
+		done();
+
+		if ( typeof data['code'] == 'string' ) {
+			data['code'] = parseInt(data['code']);
+		}
+
+		// 返回数据异常
+		if ( typeof data['code'] == 'number' && data['code'] !== 0 ) {
+
+			if ( typeof data['extra'] == 'object' && typeof data['extra']['errors'] == 'object'  ) {
+				failure( data['extra']['errors'], validation );
+				return;
+			}
+
+			var message = data['message'] || "未知错误";
+			failure( message );
+			return;
+		}
+
+		if ( typeof  data['question_id'] == 'undefined' ) {
+			var message = data['message'] || "未知错误";
+			failure( message );
+			return;
+		}
+		
+
+		// 更新ID
+		$('input[name=question_id]').val( data['question_id'] );
+		$('.fn-saved-only').removeClass('hidden');
+		$('.fn-saved-only').attr('data-param-id', data['question_id']);
+
+		// 保存成功
+		success('保存成功');
+
+	}, 'json')
+
+	.error(function( xhr, status, message) {
+		failure("保存失败, 网络错误 ( " + xhr.status + ' ' + message+" )");
+		console.log( status, xhr.status, ' message=', message );
+	});
+}
+
+
+$(function(){
+
+	// 设定高度
+	$('.question-content').css('minHeight', $(document).outerHeight() );
+	
+	App.initHelpers(['datepicker','select2', 'js-draggable-items', 'masked-inputs','tags-inputs',  'ajax-confirm', 'slimscroll', 'file-uploader', 'image-crop']);
+
+	// 表单验证
+	$('.question-form').validate({
+		errorClass: 'help-block animated fadeInDown',
+		errorElement: 'div',
+		errorPlacement: function(error, e) {				
+			jQuery(e).parents('.form-group .col-xs-8').append(error);
+		},
+		highlight: function(e) {
+			jQuery(e).closest('.form-group .col-xs-8').parent().removeClass('has-error').addClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+		unhighlight:function(e){
+			jQuery(e).closest('.form-group .col-xs-8').parent().removeClass('has-error');
+			jQuery(e).closest('.help-block .col-xs-8').remove();
+		},
+		success: function(e) {
+			jQuery(e).closest('.form-group .col-xs-8').parent().removeClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+
+		submitHandler: function(form) {
+			save( form, this);
+			return false;
+		},
+
+		rules: {},
+		messages: {}
+
+	});
+
+
+	$('.fn-duplicate').click(function(){
+		var api = "<?=App::R('question','duplicate', ['question_id'=>''])?>";
+		var id = $(this).attr('data-param-id');
+		var url = api + id;
+		window.location = url;
+	})
+
+	if ( $('input[name="question_id"]').val() == '' || $('input[name="question_id"]').val() == undefined ) {
+		$('.fn-saved-only').addClass('hidden');
+	}
+
+// 自定义代码
+
+
+})
+	
+</script>

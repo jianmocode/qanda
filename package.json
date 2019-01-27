@@ -47,7 +47,7 @@
         },
         "icontype": "img",
         "linktype":"i",
-        "link":"{vote,index}",
+        "link":"{agree,index}",
         "permission": "boss,admin,manager,user",
         "order":9999
     },{
@@ -59,17 +59,6 @@
         "icontype": "img",
         "linktype":"i",
         "link":"{topic,index}",
-        "permission": "boss,admin,manager,user",
-        "order":9999
-    },{
-        "slug":"xpmsns/qanda/tag/index",
-        "name":"标签",
-        "icon":{
-            "default":"/static/icons/tag.svg"
-        },
-        "icontype": "img",
-        "linktype":"i",
-        "link":"{tag,index}",
         "permission": "boss,admin,manager,user",
         "order":9999
     }],
