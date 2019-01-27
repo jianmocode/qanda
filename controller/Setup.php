@@ -14,6 +14,7 @@ class SetupController extends \Xpmse\Loader\Controller {
 
 		$this->models = [
             '\\Xpmsns\\Qanda\\Model\\Question',
+            '\\Xpmsns\\Qanda\\Model\\Answer',
 		];
 	}
 

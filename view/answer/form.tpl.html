@@ -1,0 +1,663 @@
+<?php 
+use \Xpmse\Loader\App; 
+use \Xpmse\Utils;
+use \Xpmse\T;
+?>
+<style type="text/css">
+	.form {
+		padding-top: 60px;
+		padding-bottom: 60px;
+	}
+</style>
+
+
+<!-- Page Content -->
+<div class="content"> 
+	<div class="block block-bordered " >
+		<div class="block-header remove-margin" >
+
+			<h3 class="block-title" >
+				<a href="<?=App::R('answer', 'index')?>" class="text-default">
+                    <i class="fa fa-arrow-circle-o-left"></i> 
+                    回答列表 
+                </a> / <?=$action_name?> 
+			</h3>
+			
+		</div> <!-- END block-header -->
+
+		<div class="block-content form answer-content js-draggable-items" >
+
+			<form class="form-horizontal answer-form form-lg" action= '<?=App::NR("answer", "save");?>' >
+
+				<!-- 隐藏域 -->
+				<input type="hidden" name="answer_id" value="<?=$rs['answer_id']?>" >
+	
+
+
+ 
+	<!-- 下拉选择(动态数据): 提问ID (question_id) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="question_id">提问ID</label>
+		<div class="col-xs-8"> 
+			<select class="js-select2 form-control input-lg   "  style="width: 100%;" 
+					id="question_id" name="question_id" 
+					data-language="zh-CN"
+					data-param-cancelable="0"
+					data-param-cancel="取消选择"
+					data-param-model="\Xpmsns\Qanda\Model\Question"
+					data-param-table="question"
+					data-param-fields="question_id,title,publish_time"
+					data-param-style="{{title}} ( ID: {{question_id}} @{{publish_time|date('Y年m月d日 @H:i:s')}})"
+					data-param-option="question_id"
+					data-param-default=""
+					data-ajax-url="/_a/mina/helper/select2?method=get"
+					data-preload-url="/_a/mina/helper/select2?method=get&preload=<?=T::v('<%=question_id | join(\',\')%>', $rs )?>"
+					data-placeholder=""  >
+				<option></option>
+			</select>
+			<div class="help-block"></div>
+		</div>
+			</div><!-- END 下拉选择(动态数据): 提问ID (question_id) -->
+
+
+
+ 
+	<!-- 下拉选择(动态数据): 用户ID (user_id) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="user_id">用户ID</label>
+		<div class="col-xs-8"> 
+			<select class="js-select2 form-control input-lg   "  style="width: 100%;" 
+					id="user_id" name="user_id" 
+					data-language="zh-CN"
+					data-param-cancelable="0"
+					data-param-cancel="取消选择"
+					data-param-model="\Xpmsns\User\Model\User"
+					data-param-table="user"
+					data-param-fields="user_id,name,nickname,mobile"
+					data-param-style="{{name ? name : nickname }} ( ID: {{user_id}}  手机: {{mobile}})"
+					data-param-option="user_id"
+					data-param-default=""
+					data-ajax-url="/_a/mina/helper/select2?method=get"
+					data-preload-url="/_a/mina/helper/select2?method=get&preload=<?=T::v('<%=user_id | join(\',\')%>', $rs )?>"
+					data-placeholder=""  >
+				<option></option>
+			</select>
+			<div class="help-block"></div>
+		</div>
+			</div><!-- END 下拉选择(动态数据): 用户ID (user_id) -->
+
+
+
+
+	<!-- 富文本(summernote): 正文 (content) 开始  -->
+	<div class="form-group     ">
+		<label class="col-xs-2 control-label" for="content">正文</label>
+		<div class="col-xs-8">
+			<textarea class="js-summernote" name="content" id="content" placeholder="" ><?=T::v('<%=content | e(\'html\')%>', $rs )?></textarea>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 富文本(summernote): 正文 (content) -->
+	<script type="text/javascript">
+		// Init full text editor
+		$('.js-summernote[name=content]').summernote({
+			lang: 'zh-CN',
+			height: 300,
+			minHeight: null,
+			maxHeight: null,
+			callbacks: {
+    			onImageUpload: function(files) {
+    				var that = this;
+    				for(var i = files.length - 1; i >= 0; i--) {
+    					var file = files[i];
+    					var form_data = new FormData();
+						form_data.append('file', file);
+						$.ajax({
+							data: form_data,
+							dataType:'json',
+							type: "POST",
+							url: '/_a/mina/uploader/upload?type=image',
+							cache: false,
+							contentType: false,
+							processData: false,
+							success: function( rs ) {
+							    $(that).summernote('editor.insertImage', rs['url']);
+							}
+						});
+    				}
+    			}
+    		}
+		});
+	</script>
+
+
+
+<!-- 单行时间日期: 发布时间 (publish_time) 开始  -->
+<div class="form-group   ">
+<label class="col-xs-2 control-label" for="publish_time__date">发布时间</label>
+<div class="col-xs-4">
+<input 
+ name="publish_time__date" id="publish_time__date"
+
+class="js-datepicker form-control  input-lg" type="text" 
+data-date-format="yyyy年mm月dd日" 
+placeholder="请选择日期 "
+ value="<?=T::v('<%=publish_time | toDate%>', $rs )?>"  />
+
+<div class="help-block"></div>
+</div>
+ <div class="col-xs-4">
+<input 
+name="publish_time__time" id="publish_time__time"
+class="js-masked-time form-control  input-lg"  type="text" 
+ placeholder="请输入时间"
+value="<?=T::v('<%=publish_time | toTime%>', $rs )?>" /> 
+ </div>
+<input name="publish_time" id="publish_time" type="hidden" value="<?=T::v('<%=publish_time | toDateTime%>', $rs )?>" />
+<script type="text/javascript">
+$(function(){
+function publish_time_change() {
+var tm = $('input[name=publish_time__time').val();
+ tm = tm.replace('@ ', '');
+tm = tm.replace('时', ':');
+tm = tm.replace('分', ':');
+ tm = tm = tm + '00';
+var dt = $('input[name=publish_time__date]').val();
+dt = dt.replace('年', '-');
+dt = dt.replace('月', '-');
+ dt = dt.replace('日', '');
+var datetime = dt + ' ' + tm;
+$('input[name=publish_time]').val( datetime );
+}
+$('input[name=publish_time__date]').on("change", function( e ){
+ publish_time_change();
+
+});
+
+ $('input[name=publish_time__time').on("change", function( e ){
+
+publish_time_change();
+});
+});
+
+ </script>
+</div><!-- END 单行时间日期: 发布时间 (publish_time) -->
+
+	<!-- 单行文本: 围观积分 (coin_view) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="coin_view">围观积分</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="coin_view" name="coin_view" 
+				placeholder="需要付费围观才可以查看"  
+				value="<?=T::v('<%=coin_view | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">单位:个</div>
+		</div>
+	</div><!-- END 单行文本: 围观积分 (coin_view) -->
+
+	<!-- 单行文本: 围观金额 (money_view) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="money_view">围观金额</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="money_view" name="money_view" 
+				placeholder="需要付费围观才可以查看"  
+				value="<?=T::v('<%=money_view | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">单位:分</div>
+		</div>
+	</div><!-- END 单行文本: 围观金额 (money_view) -->
+
+
+	<!-- 单选框: 访问策略 (policies) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="policies">访问策略</label>
+		<div class="col-xs-8">
+			<?php if (is_null($rs["policies"])) { $rs["policies"] = "public"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="policies" data-uncheck-value="public" value="public" <?=("public" == $rs["policies"]) ? "checked" : ""?> > <span></span> 公开</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="policies" data-uncheck-value="poster-only" value="poster-only" <?=("poster-only" == $rs["policies"]) ? "checked" : ""?> > <span></span> 仅提问者可见</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="policies" data-uncheck-value="paid-only" value="paid-only" <?=("paid-only" == $rs["policies"]) ? "checked" : ""?> > <span></span> 付费用户可见</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 访问策略 (policies) 开始  -->
+
+
+
+
+    <!-- JSON编辑器(json-editor): 访问策略明细 (policies_detail) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="policies_detail" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">访问策略明细</label>
+			<div class="col-xs-8">
+                
+                                <textarea class="form-control input-lg " name="policies_detail"  type="text"  rows="6" 
+                    
+                    placeholder=""><?=T::v('<%=policies_detail | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols" value="policies_detail" />
+                			</div>
+			<div class="col-xs-2 push-10-t"></div>
+		</div>
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block"></div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 访问策略明细 (policies_detail)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="policies_detail"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: false,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
+
+	<!-- 单行文本: 优先级 (priority) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="priority">优先级</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="priority" name="priority" 
+				placeholder=""  
+				value="<?=T::v('<%=priority | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单行文本: 优先级 (priority) -->
+
+	<!-- 单行文本: 浏览量 (view_cnt) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="view_cnt">浏览量</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg disabled"  disabled
+				type="text" 
+				id="view_cnt" name="view_cnt" 
+				placeholder=""  
+				value="<?=T::v('<%=view_cnt | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单行文本: 浏览量 (view_cnt) -->
+
+	<!-- 单行文本: 赞同量 (agree_cnt) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="agree_cnt">赞同量</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg disabled"  disabled
+				type="text" 
+				id="agree_cnt" name="agree_cnt" 
+				placeholder=""  
+				value="<?=T::v('<%=agree_cnt | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单行文本: 赞同量 (agree_cnt) -->
+
+	<!-- 单行文本: 获得积分 (coin) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="coin">获得积分</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg disabled"  disabled
+				type="text" 
+				id="coin" name="coin" 
+				placeholder=""  
+				value="<?=T::v('<%=coin | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">单位: 个</div>
+		</div>
+	</div><!-- END 单行文本: 获得积分 (coin) -->
+
+	<!-- 单行文本: 获得金额 (money) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="money">获得金额</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg disabled"  disabled
+				type="text" 
+				id="money" name="money" 
+				placeholder=""  
+				value="<?=T::v('<%=money | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">单位: 分</div>
+		</div>
+	</div><!-- END 单行文本: 获得金额 (money) -->
+
+
+	<!-- 单选框: 是否匿名 (anonymous) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="anonymous">是否匿名</label>
+		<div class="col-xs-8">
+			<?php if (is_null($rs["anonymous"])) { $rs["anonymous"] = "0"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="anonymous" data-uncheck-value="0" value="0" <?=("0" == $rs["anonymous"]) ? "checked" : ""?> > <span></span> 不匿名</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="anonymous" data-uncheck-value="1" value="1" <?=("1" == $rs["anonymous"]) ? "checked" : ""?> > <span></span>  匿名</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 是否匿名 (anonymous) 开始  -->
+
+
+	<!-- 单选框: 是否采纳 (accepted) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="accepted">是否采纳</label>
+		<div class="col-xs-8">
+			<?php if (is_null($rs["accepted"])) { $rs["accepted"] = "0"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="accepted" data-uncheck-value="0" value="0" <?=("0" == $rs["accepted"]) ? "checked" : ""?> > <span></span> 暂未采纳</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="accepted" data-uncheck-value="1 " value="1 " <?=("1 " == $rs["accepted"]) ? "checked" : ""?> > <span></span> 采纳</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 是否采纳 (accepted) 开始  -->
+
+
+	<!-- 单选框: 状态 (status) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="status">状态</label>
+		<div class="col-xs-8">
+			<?php if (is_null($rs["status"])) { $rs["status"] = "opened"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="opened" value="opened" <?=("opened" == $rs["status"]) ? "checked" : ""?> > <span></span> 开放</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="closed" value="closed" <?=("closed" == $rs["status"]) ? "checked" : ""?> > <span></span>  关闭</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="forbidden" value="forbidden" <?=("forbidden" == $rs["status"]) ? "checked" : ""?> > <span></span> 封禁</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="drafted" value="drafted" <?=("drafted" == $rs["status"]) ? "checked" : ""?> > <span></span> 草稿</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 状态 (status) 开始  -->
+
+
+
+
+    <!-- JSON编辑器(json-editor): 修改历史 (history) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="history" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">修改历史</label>
+			<div class="col-xs-8">
+                
+                                <textarea class="form-control input-lg disabled" name="history"  type="text"  rows="6" 
+                    disabled
+                    placeholder=""><?=T::v('<%=history | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols" value="history" />
+                			</div>
+			<div class="col-xs-2 push-10-t"></div>
+		</div>
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block"></div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 修改历史 (history)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="history"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: true,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
+
+				<!--  提交按钮 -->
+				<div class="block block-quickpanel sidebar-mini">
+					<div class="block-quickpanel-content" >
+						<div class="form-group">
+
+							<!-- 功能组 -->
+							<div class="col-xs-2 push-20-t text-left">
+								<a href="<?=App::R('answer', 'index')?>"
+									class="btn btn-lg btn-primary font-w300 btn-minw push-20-l user-action fn-back" >
+									<i class="fa fa-angle-double-left push-5-r"></i> 回答列表 
+								</a>
+							</div>
+							<div class="col-xs-8 push-20-t text-center">
+								<button  
+									type="submit" 
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-20-r fn-action fn-save  ">
+										<i class="fa fa-save push-5-r"></i> 保存
+								</button>
+
+								<button  
+									type="button" 
+									data-param-id="<?=$rs['answer_id']?>"
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-50-r fn-action fn-saved-only fn-duplicate  ">
+										<i class="fa fa-files-o push-5-r"></i> 复制
+								</button>
+
+								<button 
+									type="button"
+									class="btn btn-lg btn-danger btn-minw ajax-confirm fn-action fn-saved-only fn-remove"
+									confirm-title="请确认删除回答 "
+						            confirm-content="您确定删除回答 <strong><?=$rs['name=answer_id']?>(<?=$rs['answer_id']?> )</strong>"
+						            confirm-dismiss = "取消"
+						            confirm-submit= "确定"
+						            confirm-action="<?=App::NR('answer','remove')?>"
+						            event-before="
+										function( btn, modal ) {
+											$('button', modal)
+												.addClass('disabled')
+												.attr('disabled', 'disabled');
+										}
+									"
+									event-done="
+										function( data, btn, modal) {
+											$('button', modal)
+												.removeClass('disabled')
+												.removeAttr('disabled');
+										}
+									"
+							        event-success="
+										function(btn, modal) {
+											success('回答删除成功');
+											setTimeout(function(){
+												window.location = '<?=App::R('answer','index')?>';
+											}, 1000);
+										}
+									"
+									event-error="
+										function( data, btn, modal) {
+											failure( '回答删除失败 ('+ data['message'] + ')');
+											return true;
+										}
+									"
+
+									data-param-answer_id="<?=$rs['answer_id']?>" 
+	
+									 >
+										<i class="fa fa-minus-circle push-5-r"></i> 删除
+								</button>
+
+							</div>
+						</div>
+						<div class="bg-primary text-white text-center bottom-line"></div>	
+					</div>
+				</div> <!-- END 提交按钮 -->
+
+			</form>
+		</div> <!-- END block-content form -->
+	</div> <!-- END block block-bordered -->
+</div><!-- END content -->
+
+
+
+
+
+<script type="text/javascript">
+function pending( message ) {
+	$('.fn-action')
+		.addClass('disabled')
+		.attr('disabled', 'disabled');
+	App.loading({message:message}).show();
+}
+
+
+function success( message ) {
+	App.notify( message );
+}
+
+function failure( message,  validation ) {
+	validation = validation  || null;
+	message = message || null;
+
+	if ( typeof message == 'object' ) {
+		validation.showErrors(message);
+		return;
+	}
+
+	if ( message != null ) {
+		App.notify( message, 'fa fa-times', 'danger' );
+	}
+}
+
+function done() {
+	App.loading().hide();
+	$('.fn-action')
+		.removeClass('disabled')
+		.removeAttr('disabled');
+}
+
+
+/**
+ * 保存表单
+ */
+function save( form, validation ) {
+
+	var api =$(form).attr("action");
+
+	try {
+		var data = $(form).serializeData(true);
+	} catch( e  ){
+		console.log( e );
+		return ;
+	}
+
+	pending('保存中, 请稍候...');
+	// POST 数据
+	jQuery.post( api, data, function( data, textStatus, xhr) {
+
+		done();
+
+		if ( typeof data['code'] == 'string' ) {
+			data['code'] = parseInt(data['code']);
+		}
+
+		// 返回数据异常
+		if ( typeof data['code'] == 'number' && data['code'] !== 0 ) {
+
+			if ( typeof data['extra'] == 'object' && typeof data['extra']['errors'] == 'object'  ) {
+				failure( data['extra']['errors'], validation );
+				return;
+			}
+
+			var message = data['message'] || "未知错误";
+			failure( message );
+			return;
+		}
+
+		if ( typeof  data['answer_id'] == 'undefined' ) {
+			var message = data['message'] || "未知错误";
+			failure( message );
+			return;
+		}
+		
+
+		// 更新ID
+		$('input[name=answer_id]').val( data['answer_id'] );
+		$('.fn-saved-only').removeClass('hidden');
+		$('.fn-saved-only').attr('data-param-id', data['answer_id']);
+
+		// 保存成功
+		success('保存成功');
+
+	}, 'json')
+
+	.error(function( xhr, status, message) {
+		failure("保存失败, 网络错误 ( " + xhr.status + ' ' + message+" )");
+		console.log( status, xhr.status, ' message=', message );
+	});
+}
+
+
+$(function(){
+
+	// 设定高度
+	$('.answer-content').css('minHeight', $(document).outerHeight() );
+	
+	App.initHelpers(['datepicker','select2', 'js-draggable-items', 'masked-inputs','tags-inputs',  'ajax-confirm', 'slimscroll', 'file-uploader', 'image-crop']);
+
+	// 表单验证
+	$('.answer-form').validate({
+		errorClass: 'help-block animated fadeInDown',
+		errorElement: 'div',
+		errorPlacement: function(error, e) {				
+			jQuery(e).parents('.form-group .col-xs-8').append(error);
+		},
+		highlight: function(e) {
+			jQuery(e).closest('.form-group .col-xs-8').parent().removeClass('has-error').addClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+		unhighlight:function(e){
+			jQuery(e).closest('.form-group .col-xs-8').parent().removeClass('has-error');
+			jQuery(e).closest('.help-block .col-xs-8').remove();
+		},
+		success: function(e) {
+			jQuery(e).closest('.form-group .col-xs-8').parent().removeClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+
+		submitHandler: function(form) {
+			save( form, this);
+			return false;
+		},
+
+		rules: {},
+		messages: {}
+
+	});
+
+
+	$('.fn-duplicate').click(function(){
+		var api = "<?=App::R('answer','duplicate', ['answer_id'=>''])?>";
+		var id = $(this).attr('data-param-id');
+		var url = api + id;
+		window.location = url;
+	})
+
+	if ( $('input[name="answer_id"]').val() == '' || $('input[name="answer_id"]').val() == undefined ) {
+		$('.fn-saved-only').addClass('hidden');
+	}
+
+// 自定义代码
+
+
+})
+	
+</script>
