@@ -4,15 +4,16 @@
  * 提问数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 19:38:17
+ * 最后修改: 2019-01-27 19:41:11
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\Qanda\Model;
-                          
+                           
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
 use \Xpmse\Conf;
+use \Xpmse\Media;
 use \Mina\Cache\Redis as Cache;
 use \Xpmse\Loader\App as App;
 use \Xpmse\Job;
@@ -21,7 +22,17 @@ use \Xpmse\Job;
 class Question extends Model {
 
 
+	/**
+	 * 公有媒体文件对象
+	 * @var \Xpmse\Meida
+	 */
+	protected $media = null;
 
+	/**
+	 * 私有媒体文件对象
+	 * @var \Xpmse\Meida
+	 */
+	protected $mediaPrivate = null;
 
     /**
      * 数据缓存对象
@@ -45,6 +56,7 @@ class Question extends Model {
             "passwd"=> Conf::G("mem/redis/password")
         ]);
 
+		$this->media = new Media(['host'=>Utils::getHome()]);  // 公有媒体文件实例
 
        
 	}
@@ -117,6 +129,11 @@ class Question extends Model {
 	public function format( & $rs ) {
      
 		$fileFields = []; 
+		// 格式化: 封面
+		// 返回值: [{"url":"访问地址...", "path":"文件路径...", "origin":"原始文件访问地址..." }]
+		if ( array_key_exists('cover', $rs ) ) {
+            array_push($fileFields, 'cover');
+		}
 
         // 处理图片和文件字段 
         $this->__fileFields( $rs, $fileFields );
@@ -442,6 +459,31 @@ class Question extends Model {
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
 		$rs = $this->saveBy("question_id", $data, ["question_id"], ['_id', 'question_id']);
 		return $this->getByQuestionId( $rs['question_id'], $select );
+	}
+
+	/**
+	 * 根据问题ID上传封面。
+	 * @param string $question_id 问题ID
+	 * @param string $file_path 文件路径
+	 * @param mix $index 如果是数组，替换当前 index
+	 * @return array 已上传文件信息 {"url":"访问地址...", "path":"文件路径...", "origin":"原始文件访问地址..." }
+	 */
+	public function uploadCoverByQuestionId($question_id, $file_path, $index=null, $upload_only=false ) {
+
+		$rs = $this->getBy('question_id', $question_id, ["cover"]);
+		$paths = empty($rs["cover"]) ? [] : $rs["cover"];
+		$fs = $this->media->uploadFile( $file_path );
+		if ( $index === null ) {
+			array_push($paths, $fs['path']);
+		} else {
+			$paths[$index] = $fs['path'];
+		}
+
+		if ( $upload_only !== true ) {
+			$this->updateBy('question_id', ["question_id"=>$question_id, "cover"=>$paths] );
+		}
+
+		return $fs;
 	}
 
 

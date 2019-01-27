@@ -4,13 +4,14 @@
  * 提问控制器
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 19:38:17
+ * 最后修改: 2019-01-27 19:41:11
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/controller/Name.php
  */
 
 use \Xpmse\Loader\App;
 use \Xpmse\Excp;
 use \Xpmse\Utils;
+use \Xpmse\Media;
 
 class QuestionController extends \Xpmse\Loader\Controller {
 
@@ -202,6 +203,20 @@ class QuestionController extends \Xpmse\Loader\Controller {
 		unset($rs['question_id']);
 
 		// 复制图片
+		if ( is_array($rs['cover'])) {
+
+			$resp = [];
+			foreach ($rs['cover'] as $idx=>$fs ) {
+
+				if ( empty($fs['local']) ) {
+					continue;
+				}
+				$resp[] = $inst->uploadCoverByQuestionId( $question_id, $fs['local'], $idx, true);
+			}
+
+			$rs['cover'] = $resp;
+		}
+
 
 		$data = [
 			'action_name' =>  $action_name,
