@@ -131,6 +131,20 @@ use \Xpmse\T;
 
 
 
+	<!-- 文本域: 摘要 (summary) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="summary">摘要</label>
+		<div class="col-xs-8">
+			<textarea class="form-control input-lg "   
+				type="text" 
+				id="summary" name="summary" rows="4"
+				placeholder=""><?=T::v('<%=summary  | e(\'html\')%>', $rs )?></textarea> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 文本域: 摘要 (summary) -->
+
+
+
 <!-- 单行时间日期: 发布时间 (publish_time) 开始  -->
 <div class="form-group   ">
 <label class="col-xs-2 control-label" for="publish_time__date">发布时间</label>

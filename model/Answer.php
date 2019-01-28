@@ -4,11 +4,11 @@
  * 回答数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-28 14:33:57
+ * 最后修改: 2019-01-28 18:19:17
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\Qanda\Model;
-                      
+                       
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
@@ -66,6 +66,8 @@ class Answer extends Model {
 		$this->putColumn( 'question_id', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
 		// 用户ID
 		$this->putColumn( 'user_id', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
+		// 摘要
+		$this->putColumn( 'summary', $this->type("string", ["length"=>400, "index"=>true, "null"=>true]));
 		// 正文
 		$this->putColumn( 'content', $this->type("longText", ["null"=>true]));
 		// 发布时间
@@ -201,6 +203,7 @@ class Answer extends Model {
 	 *                $rs["question_question_id"], // question.question_id
 	 *          	  $rs["user_id"],  // 用户ID 
 	 *                $rs["user_user_id"], // user.user_id
+	 *          	  $rs["summary"],  // 摘要 
 	 *          	  $rs["content"],  // 正文 
 	 *          	  $rs["publish_time"],  // 发布时间 
 	 *          	  $rs["policies"],  // 访问策略 
@@ -473,6 +476,7 @@ class Answer extends Model {
 	 *               	["question_question_id"], // question.question_id
 	 *               	["user_id"],  // 用户ID 
 	 *               	["user_user_id"], // user.user_id
+	 *               	["summary"],  // 摘要 
 	 *               	["content"],  // 正文 
 	 *               	["publish_time"],  // 发布时间 
 	 *               	["policies"],  // 访问策略 
@@ -582,6 +586,7 @@ class Answer extends Model {
 			$qb->where(function ( $qb ) use($query) {
 				$qb->where("answer.answer_id", "like", "%{$query['keyword']}%");
 				$qb->orWhere("answer.question_id","like", "%{$query['keyword']}%");
+				$qb->orWhere("answer.summary","like", "%{$query['keyword']}%");
 				$qb->orWhere("user.name","like", "%{$query['keyword']}%");
 				$qb->orWhere("user.nickname","like", "%{$query['keyword']}%");
 				$qb->orWhere("question.title","like", "%{$query['keyword']}%");
@@ -805,6 +810,7 @@ class Answer extends Model {
 			"answer_id",  // 回答ID
 			"question_id",  // 提问ID
 			"user_id",  // 用户ID
+			"summary",  // 摘要
 			"content",  // 正文
 			"publish_time",  // 发布时间
 			"policies",  // 访问策略

@@ -4,11 +4,11 @@
  * 回答数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-28 14:33:57
+ * 最后修改: 2019-01-28 18:19:16
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\Qanda\Api;
-                      
+                       
 
 use \Xpmse\Loader\App;
 use \Xpmse\Excp;
@@ -57,7 +57,8 @@ class Answer extends Api {
         // 许可字段清单
 		$allowed =  [
             "question_id",  // 问题ID
-			"user_id",  // 用户ID
+            "user_id",  // 用户ID
+            "summary",  // 摘要
 			"content",  //  正文
 			"publish_time",  // 发布时间
 			"policies",  // 访问策略
@@ -139,6 +140,7 @@ class Answer extends Api {
         // 许可字段清单
 		$allowed =  [
             "answer_id",  // 回答ID
+            "summary",  // 摘要
 			"content",  //  正文
 			"publish_time",  // 发布时间
 			"policies",  // 访问策略
