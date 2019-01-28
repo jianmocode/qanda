@@ -84,6 +84,43 @@ class Answer extends Model {
             }
         }
     }
+
+    /**
+     * 查询每个问题的最佳答案
+     * @param array $question_ids 问题IDs
+     * @param string|array $select 选中的字段
+     * @return array 问题与答案映射表 { 
+     *      ":question_id":{ 
+     *          :answer 
+     *          ...
+     *      },
+     *   ...
+     * }
+     */
+    public function searchTopOne( $question_ids, $select=["answer.user_id","answer.view_cnt","answer.agree_cnt","answer.content","answer.accepted","answer.status","answer.status","answer.publish_time","user.name","user.nickname"] ) {
+
+        array_push( $select, "answer.question_id" );
+
+		// 创建查询构造器
+		$qb = Utils::getTab("xpmsns_qanda_answer as answer", "{none}")->query();
+        $qb->leftJoin("xpmsns_user_user as user", "user.user_id", "=", "answer.user_id"); // 连接用户
+        $qb->leftJoin("xpmsns_qanda_question as question", "question.question_id", "=", "answer.question_id"); // 连接提问
+
+        $qb->whereIn("answer.question_id", $question_ids);
+        $qb->orderBy("answer.priority", "desc");
+        $qb->orderBy("answer.agree_cnt", "desc");
+        $qb->orderBy("answer.publish_time", "desc");
+        $qb->select( $select );
+
+        $rows = $qb->get()->unique('answer.question_id')->toArray();
+        $map = [];
+        foreach( $rows as $rs ) {
+            $map[$rs["question_id"]] = $rs;
+        }
+        return $map;
+    }
+
+    
     // @KEEP END
 
 

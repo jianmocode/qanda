@@ -112,6 +112,36 @@ class Question extends Model {
         }
     }
 
+
+    /**
+     * 关联最优的一条问题答案
+     * @param array &$rows 回答数据
+     * @param array $select 选中字段清单
+     */
+    function widthAnswer( &$rows, $select=[] ) {
+        if ( empty( $select) ) {
+            $select = ["answer.user_id","answer.view_cnt","answer.agree_cnt","answer.content","answer.accepted","answer.status","answer.status","answer.publish_time","user.name","user.nickname"];
+        }
+        if ( is_string( $select) ) {
+            $select = explode(",", $select);
+        }
+
+        $question_ids = array_column( $rows, "question_id");
+        if ( empty($question_ids) ) {
+            return;
+        }
+
+        $an = new \Xpmsns\Qanda\Model\Answer;
+        $map = $an->searchTopOne( $question_ids, $select );
+
+        foreach ( $rows  as &$rs ) {
+            $question_id = $rs["question_id"];
+            $rs["answer"] = empty($map["{$question_id}"]) ? [] : $map["{$question_id}"];
+        }
+
+    }
+
+
     // @KEEP END
 
 

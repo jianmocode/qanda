@@ -315,7 +315,9 @@ class Question extends Api {
         if ( !empty($user["user_id"]) && $query["withagree"] == 1 ) {
              $qu->withAgree( $resp["data"], $user["user_id"] );
         }
-         
+        
+        $qu->widthAnswer( $resp["data"] );
+        
 		return $resp;
 	}
 
