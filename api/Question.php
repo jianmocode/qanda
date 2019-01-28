@@ -53,12 +53,22 @@ class Question extends Api {
 		$inst = new \Xpmsns\Qanda\Model\Question;
         $question = $inst->getByQuestionId( $data["question_id"], $select );
 
+        // 查询回答列表
         if ( $data["withanswer"] ) {
             $an = new \Xpmsns\Qanda\Model\Answer;
             $data["select"] = $data["answer_select"];
+
+            // 查询置顶的回答
+            if ( !empty($data["answer_id"]) ) {
+                $answer = $an->getByAnswerId( $data["answer_id"],  $data["select"]);
+                $question["answer"] = $answer;
+                $data["exclude"] = [$data["answer_id"]];
+                unset($data["answer_id"]);
+            }
             $answers = $an->search( $data );
             $question["answers"] = $answers;
         }
+        
         
         return $question;
         
