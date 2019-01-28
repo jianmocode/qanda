@@ -4,7 +4,7 @@
  * 提问数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 19:59:31
+ * 最后修改: 2019-01-28 19:15:54
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\Qanda\Api;
@@ -50,8 +50,16 @@ class Question extends Api {
 		}
 		$data['select'] = $select;
 
-		$inst = new \Xpmsns\Qanda\Model\Question;
-        $question = $inst->getByQuestionId( $data["question_id"], $select );
+		$qu = new \Xpmsns\Qanda\Model\Question;
+        $question = $qu->getByQuestionId( $data["question_id"], $select );
+
+        // 关联用户赞赏
+        $user = \Xpmsns\User\Model\User::info();
+        if ( !empty($user["user_id"]) && $data["withagree"] == 1 ) {
+            $rows = [ $question ];
+            $qu->withAgree( $rows, $user["user_id"] );
+            $question = current($rows);
+        }
 
         // 查询回答列表
         if ( $data["withanswer"] ) {
@@ -61,11 +69,22 @@ class Question extends Api {
             // 查询置顶的回答
             if ( !empty($data["answer_id"]) ) {
                 $answer = $an->getByAnswerId( $data["answer_id"],  $data["select"]);
+                if ( !empty($user["user_id"]) && $data["withagree"] == 1 ) {
+                    $rows = [ $answer ];
+                    $an->withAgree( $rows, $user["user_id"] );
+                    $answer = current($rows);
+                }
+
                 $question["answer"] = $answer;
                 $data["exclude"] = [$data["answer_id"]];
                 unset($data["answer_id"]);
             }
+
             $answers = $an->search( $data );
+            if ( !empty($user["user_id"]) && $data["withagree"] == 1 ) {
+                $an->withAgree( $answers["data"], $user["user_id"] );
+            }
+
             $question["answers"] = $answers;
         }
         
@@ -270,8 +289,35 @@ class Question extends Api {
         if ( empty($data["summary"]) && !empty($data["content"]) ) {
             $data["summary"] = \Xpmsns\Qanda\Model\Question::summary( $data["content"], 64) ;
         }
+
+        
         return $qu->saveBy("question_id", $data);
     }
+
+
+    protected function search( $query, $data ) {
+
+		// 支持POST和GET查询
+		$data = array_merge( $query, $data );
+
+		// 读取字段
+		$select = empty($data['select']) ? ["question.question_id","question.user_id","question.title","question.summary","question.cover","question.category_ids","question.series_ids","question.tags","question.publish_time","question.coin","question.money","question.coin_view","question.money_view","question.policies","question.policies_detail","question.anonymous","question.view_cnt","question.agree_cnt","question.answer_cnt","question.priority","question.status","question.created_at","question.updated_at","user.name","user.nickname","category.name","series.name"] : $data['select'];
+		if ( is_string($select) ) {
+			$select = explode(',', $select);
+		}
+		$data['select'] = $select;
+
+        $qu = new \Xpmsns\Qanda\Model\Question;
+        $resp = $qu->search( $data );
+        
+         // 关联用户赞赏
+        $user = \Xpmsns\User\Model\User::info();
+        if ( !empty($user["user_id"]) && $query["withagree"] == 1 ) {
+             $qu->withAgree( $resp["data"], $user["user_id"] );
+        }
+         
+		return $resp;
+	}
 
     // @KEEP END
 
@@ -464,22 +510,6 @@ class Question extends Api {
 	*               	["tag"][$tags[n]]["goods_cnt"], // tag.goods_cnt
 	*               	["tag"][$tags[n]]["question_cnt"], // tag.question_cnt
 	 */
-	protected function search( $query, $data ) {
-
-
-		// 支持POST和GET查询
-		$data = array_merge( $query, $data );
-
-		// 读取字段
-		$select = empty($data['select']) ? ["question.question_id","question.user_id","question.title","question.summary","question.cover","question.category_ids","question.series_ids","question.tags","question.publish_time","question.coin","question.money","question.coin_view","question.money_view","question.policies","question.policies_detail","question.anonymous","question.view_cnt","question.agree_cnt","question.answer_cnt","question.priority","question.status","question.created_at","question.updated_at","user.name","user.nickname","category.name","series.name"] : $data['select'];
-		if ( is_string($select) ) {
-			$select = explode(',', $select);
-		}
-		$data['select'] = $select;
-
-		$inst = new \Xpmsns\Qanda\Model\Question;
-		return $inst->search( $data );
-	}
-
+	
 
 }

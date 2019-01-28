@@ -53,6 +53,39 @@ class Answer extends Model {
 	 * 自定义函数 
 	 */
 
+    // @KEEP BEGIN
+    /**
+     * 关联某人赞同数据
+     * @param array &$rows 回答数据
+     * @param string $user_id 用户ID 
+     * @return null
+     */
+    function withAgree( & $rows, $user_id, $select=["agree.origin_outer_id","agree.agree_id","user.user_id","user.name","user.nickname","user.mobile","agree.origin","agree.outer_id","agree.created_at","agree.updated_at"]) {
+
+        $ids = array_column( $rows, "answer_id");
+        if ( empty( $ids) ) {
+            return;
+        }
+
+        // 读取赞同信息
+        $ag = new \Xpmsns\Comment\Model\Agree;
+        $origin_outer_ids = array_map(function($id) use( $user_id ){ return "answer_{$user_id}_{$id}"; }, $ids);
+        $agrees = $ag->getInByOriginOuterId($origin_outer_ids, $select);
+
+        // 合并到数据表
+        foreach($rows as & $rs ) {
+            $origin_outer_id = "answer_{$user_id}_{$rs['answer_id']}";
+            $rs["agree"] = $agrees[$origin_outer_id];
+            if (is_null($rs["agree"]) ){
+                $rs["agree"] = [];
+                $rs["has_agreed"] = false;
+            }  else {
+                $rs["has_agreed"] = true;
+            }
+        }
+    }
+    // @KEEP END
+
 
 	/**
 	 * 创建数据表

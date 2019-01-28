@@ -4,7 +4,7 @@
  * 提问数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 19:59:33
+ * 最后修改: 2019-01-28 19:15:54
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\Qanda\Model;
@@ -80,6 +80,38 @@ class Question extends Model {
 		$summary = mb_substr(trim($summary), 0, $length, 'UTF-8');
 		return $summary;
     }
+
+    /**
+     * 关联某人赞同数据
+     * @param array &$rows 回答数据
+     * @param string $user_id 用户ID 
+     * @return null
+     */
+    function withAgree( & $rows, $user_id, $select=["agree.origin_outer_id","agree.agree_id","user.user_id","user.name","user.nickname","user.mobile","agree.origin","agree.outer_id","agree.created_at","agree.updated_at"]) {
+
+        $ids = array_column( $rows, "question_id");
+        if ( empty( $ids) ) {
+            return;
+        }
+
+        // 读取赞同信息
+        $ag = new \Xpmsns\Comment\Model\Agree;
+        $origin_outer_ids = array_map(function($id) use( $user_id ){ return "question_{$user_id}_{$id}"; }, $ids);
+        $agrees = $ag->getInByOriginOuterId($origin_outer_ids, $select);
+
+        // 合并到数据表
+        foreach($rows as & $rs ) {
+            $origin_outer_id = "question_{$user_id}_{$rs['question_id']}";
+            $rs["agree"] = $agrees[$origin_outer_id];
+            if (is_null($rs["agree"]) ){
+                $rs["agree"] = [];
+                $rs["has_agreed"] = false;
+            }  else {
+                $rs["has_agreed"] = true;
+            }
+        }
+    }
+
     // @KEEP END
 
 

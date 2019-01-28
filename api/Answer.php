@@ -193,8 +193,16 @@ class Answer extends Api {
 		}
 		$data['select'] = $select;
 
-		$inst = new \Xpmsns\Qanda\Model\Answer;
-		return $inst->search( $data );
+		$an = new \Xpmsns\Qanda\Model\Answer;
+        $resp = $an->search( $data );
+        
+        // 关联用户赞赏
+        $user = \Xpmsns\User\Model\User::info();
+        if ( !empty($user["user_id"]) && $query["withagree"] == 1 ) {
+            $an->withAgree( $resp["data"], $user["user_id"] );
+        }
+
+        return $resp;
 	}
 
     // @KEEP END
