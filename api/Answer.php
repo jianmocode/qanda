@@ -93,6 +93,11 @@ class Answer extends Api {
             unset($data["publish_time"]);
         }
 
+        // 摘要
+        if ( empty($data["summary"]) && !empty($data["content"]) ) {
+            $data["summary"] = \Xpmsns\Qanda\Model\Question::summary( $data["content"], 64) ;
+        }
+
         $qu = new \Xpmsns\Qanda\Model\Answer;
         return $qu->create( $data );
     }
@@ -165,6 +170,10 @@ class Answer extends Api {
 			$data['policies_detail'] = json_decode($data['policies_detail'], true);
         }
         
+        // 摘要
+        if ( empty($data["summary"]) && !empty($data["content"]) ) {
+            $data["summary"] = \Xpmsns\Qanda\Model\Question::summary( $data["content"], 64) ;
+        }
         return $an->saveBy("answer_id", $data);
     }
 

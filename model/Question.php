@@ -65,6 +65,23 @@ class Question extends Model {
 	 * 自定义函数 
 	 */
 
+    // @KEEP BEGIN
+
+	/**
+	 * 根据内容分析摘要
+	 * @param  [type] $content [description]
+	 * @return [type]          [description]
+	 */
+	static function summary( $content, $length=54 ) {
+		$content = trim(strip_tags($content));
+		$content = str_replace('。', '.', $content);
+		$arrs = explode('.', $content);
+		$summary = current($arrs);
+		$summary = mb_substr(trim($summary), 0, $length, 'UTF-8');
+		return $summary;
+    }
+    // @KEEP END
+
 
 	/**
 	 * 创建数据表
