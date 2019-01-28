@@ -4,7 +4,7 @@
  * 回答数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-28 10:39:37
+ * 最后修改: 2019-01-28 14:33:57
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\Qanda\Model;
@@ -459,6 +459,7 @@ class Answer extends Model {
 	 *			      $query["money_view"] 按围观金额查询 ( > )
 	 *			      $query["policies"] 按访问策略查询 ( = )
 	 *			      $query["accepted"] 按是否采纳查询 ( = )
+	 *			      $query["exclude"] 按不包含查询 ( NOT-IN )
 	 *			      $query["status"] 按状态查询 ( = )
 	 *			      $query["view_desc"]  按浏览数量倒序 DESC 排序
 	 *			      $query["agree_desc"]  按赞同数量倒序 DESC 排序
@@ -641,6 +642,14 @@ class Answer extends Model {
 		// 按是否采纳查询 (=)  
 		if ( array_key_exists("accepted", $query) &&!empty($query['accepted']) ) {
 			$qb->where("answer.accepted", '=', "{$query['accepted']}" );
+		}
+		  
+		// 按不包含查询 (NOT-IN)  
+		if ( array_key_exists("exclude", $query) &&!empty($query['exclude']) ) {
+			if ( is_string($query['exclude']) ) {
+				$query['exclude'] = explode(',', $query['exclude']);
+			}
+			$qb->whereNotIn("answer.answer_id",  $query['exclude'] );
 		}
 		  
 		// 按状态查询 (=)  
