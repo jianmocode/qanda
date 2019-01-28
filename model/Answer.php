@@ -4,7 +4,7 @@
  * 回答数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-27 20:45:37
+ * 最后修改: 2019-01-28 10:39:37
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\Qanda\Model;
@@ -95,7 +95,7 @@ class Answer extends Model {
 		// 状态
 		$this->putColumn( 'status', $this->type("string", ["length"=>32, "index"=>true, "default"=>"opened", "null"=>true]));
 		// 修改历史
-		$this->putColumn( 'history', $this->type("longText", ["null"=>true]));
+		$this->putColumn( 'history', $this->type("longText", ["json"=>true, "null"=>true]));
 
 		return $this;
 	}
