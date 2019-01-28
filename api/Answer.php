@@ -78,6 +78,21 @@ class Answer extends Api {
 			$data['policies_detail'] = json_decode($data['policies_detail'], true);
         }
         
+        // 状态
+        if (empty($data["status"])) {
+            $data["status"] = "opened";
+        }
+
+        if ( !empty($data["publish_time"]) ) {
+            $data["publish_time"] = date("Y-m-d H:i:s", strtotime($data["publish_time"]));
+        } else {
+            $data["publish_time"] = date("Y-m-d H:i:s");
+        }
+
+        if ( $data["status"] != "opened"  ) {
+            unset($data["publish_time"]);
+        }
+
         $qu = new \Xpmsns\Qanda\Model\Answer;
         return $qu->create( $data );
     }

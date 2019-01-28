@@ -143,7 +143,22 @@ class Question extends Api {
             foreach( $data['tags'] as & $val ) {
                 $val = trim($val);
             }
-		}
+        }
+        
+        // 状态
+        if (empty($data["status"])) {
+            $data["status"] = "opened";
+        }
+    
+        if ( !empty($data["publish_time"]) ) {
+            $data["publish_time"] = date("Y-m-d H:i:s", strtotime($data["publish_time"]));
+        } else {
+            $data["publish_time"] = date("Y-m-d H:i:s");
+        }
+    
+        if ( $data["status"] != "opened"  ) {
+            unset($data["publish_time"]);
+        }
 
         $qu = new \Xpmsns\Qanda\Model\Question;
         return $qu->create( $data );
