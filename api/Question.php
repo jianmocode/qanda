@@ -31,6 +31,40 @@ class Question extends Api {
     // @KEEP BEGIN
 
     /**
+     * 读取提问
+     */
+    protected function get( $query, $data ) {
+
+        // 支持POST和GET查询
+        $data = array_merge( $query, $data );
+
+        // 检查必填项目
+        if ( empty($data["question_id"]) ) {
+            throw new Excp("请提供问题id", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+		// 读取字段
+		$select = empty($data['select']) ? ["question.question_id","question.user_id","question.title","question.summary","question.cover", "question.content", "question.category_ids","question.series_ids","question.tags","question.publish_time","question.coin","question.money","question.coin_view","question.money_view","question.policies","question.policies_detail","question.anonymous","question.view_cnt","question.agree_cnt","question.answer_cnt","question.priority","question.status","question.created_at","question.updated_at","user.name","user.nickname","category.name","series.name"] : $data['select'];
+		if ( is_string($select) ) {
+			$select = explode(',', $select);
+		}
+		$data['select'] = $select;
+
+		$inst = new \Xpmsns\Qanda\Model\Question;
+        $question = $inst->getByQuestionId( $data["question_id"], $select );
+
+        if ( $data["withanswer"] ) {
+            $an = new \Xpmsns\Qanda\Model\Answer;
+            $data["select"] = $data["answer_select"];
+            $answers = $an->search( $data );
+            $question["answers"] = $answers;
+        }
+        
+        return $question;
+        
+    }
+
+    /**
      * 发布提问
      */
     protected function create( $query, $data ) {
