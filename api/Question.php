@@ -28,7 +28,184 @@ class Question extends Api {
 	 * 自定义函数 
 	 */
 
+    // @KEEP BEGIN
 
+    /**
+     * 发布提问
+     */
+    protected function create( $query, $data ) {
+
+        // 检查必填项目
+        if ( empty( $data["title"]) ) {
+            throw new Excp("请填写问题标题", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        // 检查用户登录
+        $user = \Xpmsns\User\Model\User::Info();
+        $user_id = $user["user_id"];
+        if ( empty($user_id) ) {
+            throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        // 读取用户ID 
+        $data["user_id"] = $user_id;
+
+        // 许可字段清单
+		$allowed =  [
+			"user_id",  // 用户ID
+			"title",  // 标题
+			"summary",  // 摘要
+			"cover",  // 封面
+			"content",  //  正文
+			"category_ids",  // 类目
+			"series_ids",  // 系列
+			"tags",  // 标签
+			"publish_time",  // 发布时间
+			"policies",  // 访问策略
+			"policies_detail",  // 访问策略详情
+			"anonymous",  // 是否匿名
+			"status",  // 状态
+		];
+		$data = array_filter(
+			$data,
+			function ($key) use ($allowed) {
+				return in_array($key, $allowed);
+			},
+			ARRAY_FILTER_USE_KEY
+        );
+        
+        // 处理特殊数值
+        if ( array_key_exists('cover', $data) && is_string($data['cover']) ) {
+			$data['cover'] = json_decode($data['cover'], true);
+        }
+        if ( array_key_exists('policies_detail', $data) && is_string($data['policies_detail']) ) {
+			$data['policies_detail'] = json_decode($data['policies_detail'], true);
+        }
+        
+        if ( array_key_exists('category_ids', $data) && is_string($data['category_ids']) ) {
+            $data['category_ids'] = explode(",", $data['category_ids']);
+            foreach( $data['category_ids'] as & $val ) {
+                $val = trim($val);
+            }
+        }
+        if ( array_key_exists('series_ids', $data) && is_string($data['series_ids']) ) {
+            $data['series_ids'] = explode(",", $data['series_ids']);
+            foreach( $data['series_ids'] as & $val ) {
+                $val = trim($val);
+            }
+        }
+        if ( array_key_exists('tags', $data) && is_string($data['tags']) ) {
+            $data['tags'] = explode(",", $data['tags']);
+            foreach( $data['tags'] as & $val ) {
+                $val = trim($val);
+            }
+		}
+
+        $qu = new \Xpmsns\Qanda\Model\Question;
+        return $qu->create( $data );
+    }
+
+
+    /**
+     * 修改提问
+     */
+    function update( $query, $data ) {
+        
+        // 检查必填项目
+        if ( empty( $data["question_id"] ) ) {
+            throw new Excp("请填写问题ID内容", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        // 检查用户登录
+        $user = \Xpmsns\User\Model\User::Info();
+        $user_id = $user["user_id"];
+        if ( empty($user_id) ) {
+            throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        // 读取用户ID 
+        $data["user_id"] = $user_id;
+
+        // 验证修改权限
+        $qu = new \Xpmsns\Qanda\Model\Question;
+        $question = $qu->getByQuestionId($data["question_id"]);
+        if ( empty($question) ) { 
+            throw new Excp("提问不存在或已被删除", 404, ["query"=>$query, "data"=>$data]);
+        }
+        if ( $question["user_id"] != $user_id ) {
+            throw new Excp("没有该提问的修改权限(不是该问题作者)", 403, ["query"=>$query, "data"=>$data]);
+        }
+        if ( $question["status"] == "forbidden") {
+            throw new Excp("没有该提问的修改权限(已被封禁)", 403, ["query"=>$query, "data"=>$data]);
+        }
+
+        // 许可字段清单
+		$allowed =  [
+            "question_id",  // 问题ID
+			"user_id",  // 用户ID
+			"title",  // 标题
+			"summary",  // 摘要
+			"cover",  // 封面
+			"content",  //  正文
+			"category_ids",  // 类目
+			"series_ids",  // 系列
+			"tags",  // 标签
+			"publish_time",  // 发布时间
+			"policies",  // 访问策略
+			"policies_detail",  // 访问策略详情
+			"anonymous",  // 是否匿名
+			"status",  // 状态
+		];
+		$data = array_filter(
+			$data,
+			function ($key) use ($allowed) {
+				return in_array($key, $allowed);
+			},
+			ARRAY_FILTER_USE_KEY
+        );
+        
+        // 记录修改历史
+        $history = [];
+        if ( is_array($question["history"]) ) {
+            $history = $question["history"];
+        }
+        unset( $question["history"] );
+        $question["updated_time"] = time();
+        array_push( $history, $question );
+        $data["history"] = $history;
+
+
+        // 处理特殊数值
+        if ( array_key_exists('cover', $data) && is_string($data['cover']) ) {
+			$data['cover'] = json_decode($data['cover'], true);
+        }
+        if ( array_key_exists('policies_detail', $data) && is_string($data['policies_detail']) ) {
+			$data['policies_detail'] = json_decode($data['policies_detail'], true);
+        }
+        
+        if ( array_key_exists('category_ids', $data) && is_string($data['category_ids']) ) {
+            $data['category_ids'] = explode(",", $data['category_ids']);
+            foreach( $data['category_ids'] as & $val ) {
+                $val = trim($val);
+            }
+        }
+        if ( array_key_exists('series_ids', $data) && is_string($data['series_ids']) ) {
+            $data['series_ids'] = explode(",", $data['series_ids']);
+            foreach( $data['series_ids'] as & $val ) {
+                $val = trim($val);
+            }
+        }
+        if ( array_key_exists('tags', $data) && is_string($data['tags']) ) {
+            $data['tags'] = explode(",", $data['tags']);
+            foreach( $data['tags'] as & $val ) {
+                $val = trim($val);
+            }
+        }
+        
+        return $qu->saveBy("question_id", $data);
+    }
+
+    // @KEEP END
 
 
 
