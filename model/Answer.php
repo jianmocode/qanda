@@ -55,7 +55,7 @@ class Answer extends Model {
 
     // @KEEP BEGIN
     /**
-     * 关联某人赞同数据
+     * 关联某人赞同数据 (这个函数应该改进一下，下一版转移到 Agree的模型中 )
      * @param array &$rows 回答数据
      * @param string $user_id 用户ID 
      * @return null
