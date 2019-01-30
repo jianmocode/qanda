@@ -75,6 +75,13 @@ class Question extends Api {
                     $answer = current($rows);
                 }
 
+                // 关联用户关系
+                if ( !empty($user["user_id"]) && $query["withrelation"] == 1 ) {
+                    $rows = [ $answer ];
+                    \Xpmsns\User\Model\User::withRelation( $rows, $user["user_id"] );
+                    $answer = current($rows);
+                }
+
                 $question["answer"] = $answer;
                 $data["exclude"] = [$data["answer_id"]];
                 unset($data["answer_id"]);
@@ -83,6 +90,11 @@ class Question extends Api {
             $answers = $an->search( $data );
             if ( !empty($user["user_id"]) && $data["withagree"] == 1 ) {
                 $an->withAgree( $answers["data"], $user["user_id"] );
+            }
+
+            // 关联用户关系
+            if ( !empty($user["user_id"]) && $query["withrelation"] == 1 ) {
+                \Xpmsns\User\Model\User::withRelation( $answers["data"], $user["user_id"] );
             }
 
             $question["answers"] = $answers;
@@ -314,6 +326,11 @@ class Question extends Api {
         $user = \Xpmsns\User\Model\User::info();
         if ( !empty($user["user_id"]) && $query["withagree"] == 1 ) {
              $qu->withAgree( $resp["data"], $user["user_id"] );
+        }
+
+         // 关联用户关系
+        if ( !empty($user["user_id"]) && $query["withrelation"] == 1 ) {
+            \Xpmsns\User\Model\User::withRelation( $resp["data"], $user["user_id"] );
         }
         
         $qu->widthAnswer( $resp["data"] );

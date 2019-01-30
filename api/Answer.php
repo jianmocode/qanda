@@ -202,6 +202,11 @@ class Answer extends Api {
             $an->withAgree( $resp["data"], $user["user_id"] );
         }
 
+        // 关联用户关系
+        if ( !empty($user["user_id"]) && $query["withrelation"] == 1 ) {
+            \Xpmsns\User\Model\User::withRelation( $resp["data"], $user["user_id"] );
+        }
+
         return $resp;
 	}
 
