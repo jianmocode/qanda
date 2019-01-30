@@ -61,6 +61,13 @@ class Question extends Api {
             $question = current($rows);
         }
 
+        // 关联用户关系
+        if ( !empty($user["user_id"]) && $query["withrelation"] == 1 ) {
+            $rows = [ $question ];
+            \Xpmsns\User\Model\User::withRelation( $rows, $user["user_id"] );
+            $question = current($rows);
+        }
+
         // 查询回答列表
         if ( $data["withanswer"] ) {
             $an = new \Xpmsns\Qanda\Model\Answer;
