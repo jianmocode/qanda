@@ -142,6 +142,36 @@ class Question extends Model {
     }
 
 
+
+    /**
+     * 查询用户提问数量
+     * @param string $my_id 用户ID 
+     * @return int 用户提问总数
+     */
+    function countByUserId( string $my_id ){
+        $qb = $this->query();
+        $cnt = $qb->where("user_id", "=", $my_id )->count("_id");
+        return intval( $cnt );
+    }
+
+    /**
+     * 发布一个问答
+     * @param string $my_id 发布者用户ID 
+     * @return array $question 问答数据结构
+     */
+    function createByUserId(string $my_id, $data ) {
+        $data["user_id"] = $my_id;
+        $resp = $this->create($data);
+
+        if ( $resp ) {
+            $cnt = $this->countByUserId( $my_id );
+            $u = new \Xpmsns\User\Model\User;
+            $u->runSql("update {{table}} SET `question_cnt`=? WHERE `user_id`=? LIMIT 1", false, [ $cnt, $my_id ] );
+            $resp["question_cnt"] = $cnt;
+        }
+
+        return $resp;
+    }
     // @KEEP END
 
 
@@ -214,7 +244,17 @@ class Question extends Model {
 		// 返回值: [{"url":"访问地址...", "path":"文件路径...", "origin":"原始文件访问地址..." }]
 		if ( array_key_exists('cover', $rs ) ) {
             array_push($fileFields, 'cover');
-		}
+        }
+        
+        // @KEEP BEGIN
+        if ( array_key_exists('user_headimgurl', $rs ) ) {
+
+            if ( is_string($rs["user_headimgurl"])  && !empty($rs["user_headimgurl"])) {
+                $rs["user_headimgurl"] = json_decode( $rs["user_headimgurl"], true);   
+            }
+            array_push($fileFields, "user_headimgurl");
+        }
+        // @KEEP END
 
         // 处理图片和文件字段 
         $this->__fileFields( $rs, $fileFields );
@@ -802,7 +842,7 @@ class Question extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["question.question_id","question.title","user.name","user.nickname","category.name","tag.name","question.policies","question.status","question.created_at","question.updated_at"] : $query['select'];
+		$select = empty($query['select']) ? ["question.question_id","question.title","user.name","user.nickname","user.headimgurl","user.follower_cnt","user.following_cnt","user.question_cnt","user.answer_cnt","category.name","tag.name","question.policies","question.status","question.created_at","question.updated_at"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
