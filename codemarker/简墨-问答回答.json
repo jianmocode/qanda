@@ -1,0 +1,1066 @@
+{
+    "name": "简墨-问答回答",
+    "data": {
+        "general": {
+            "app": "qanda",
+            "org": "xpmsns",
+            "model": "_create",
+            "name": "answer",
+            "cname": "回答"
+        },
+        "struct": {
+            "table": "answer",
+            "fields": [
+                {
+                    "name": "answer_id",
+                    "cname": "回答ID",
+                    "type": "string",
+                    "length": "128",
+                    "default": "",
+                    "unique": "1",
+                    "index": "",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "1",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "question_id",
+                    "cname": "提问ID",
+                    "type": "string",
+                    "length": "128",
+                    "default": "",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "user_id",
+                    "cname": "用户ID",
+                    "type": "string",
+                    "length": "128",
+                    "default": "",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "summary",
+                    "cname": "摘要",
+                    "type": "string",
+                    "length": "400",
+                    "default": "",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "content",
+                    "cname": "正文",
+                    "type": "longText",
+                    "length": "",
+                    "default": "",
+                    "unique": "",
+                    "index": "",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "publish_time",
+                    "cname": "发布时间",
+                    "type": "timestamp",
+                    "length": "",
+                    "default": "",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "policies",
+                    "cname": "访问策略",
+                    "type": "string",
+                    "length": "128",
+                    "default": "public",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "policies_detail",
+                    "cname": "访问策略明细",
+                    "type": "text",
+                    "length": "",
+                    "default": "",
+                    "unique": "",
+                    "index": "",
+                    "nullable": "",
+                    "json": "1",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "priority",
+                    "cname": "优先级",
+                    "type": "integer",
+                    "length": "1",
+                    "default": "9999",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "view_cnt",
+                    "cname": "浏览量",
+                    "type": "integer",
+                    "length": "1",
+                    "default": "",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "agree_cnt",
+                    "cname": "赞同量",
+                    "type": "integer",
+                    "length": "1",
+                    "default": "",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "coin",
+                    "cname": "获得积分",
+                    "type": "integer",
+                    "length": "1",
+                    "default": "0",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "money",
+                    "cname": "获得金额",
+                    "type": "integer",
+                    "length": "1",
+                    "default": "0",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "coin_view",
+                    "cname": "围观积分",
+                    "type": "integer",
+                    "length": "1",
+                    "default": "0",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "money_view",
+                    "cname": "围观金额",
+                    "type": "integer",
+                    "length": "1",
+                    "default": "0",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "anonymous",
+                    "cname": "是否匿名",
+                    "type": "integer",
+                    "length": "1",
+                    "default": "0",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "accepted",
+                    "cname": "是否采纳",
+                    "type": "integer",
+                    "length": "1",
+                    "default": "0",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "status",
+                    "cname": "状态",
+                    "type": "string",
+                    "length": "32",
+                    "default": "opened",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "history",
+                    "cname": "修改历史",
+                    "type": "longText",
+                    "length": "",
+                    "default": "",
+                    "unique": "",
+                    "index": "",
+                    "nullable": "",
+                    "json": "1",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                }
+            ],
+            "methods": [
+                {
+                    "name": "",
+                    "cname": "",
+                    "source": ""
+                }
+            ]
+        },
+        "links": {
+            "fields": [
+                {
+                    "cname": "用户",
+                    "type": "leftJoin",
+                    "model": "\\Xpmsns\\User\\Model\\User",
+                    "table": "user",
+                    "prefix": "xpmsns_user_",
+                    "field": "user_id",
+                    "on": "=",
+                    "name": "user_id",
+                    "alias": "user"
+                },
+                {
+                    "cname": "提问",
+                    "type": "leftJoin",
+                    "model": "\\Xpmsns\\Qanda\\Model\\Question",
+                    "table": "question",
+                    "prefix": "xpmsns_qanda_",
+                    "field": "question_id",
+                    "on": "=",
+                    "name": "question_id",
+                    "alias": "question"
+                }
+            ]
+        },
+        "detail": {
+            "index": "name=answer_id",
+            "title": "name=answer_id",
+            "columns": [
+                {
+                    "cname": "提问ID",
+                    "name": "question_id",
+                    "type": "select-remote",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "table": "question",
+                        "prefix": "xpmsns_qanda_",
+                        "model": "\\Xpmsns\\Qanda\\Model\\Question",
+                        "fields": [
+                            "question_id",
+                            "title",
+                            "publish_time"
+                        ],
+                        "option": "question_id",
+                        "selectedInline": "",
+                        "style": "{{title}} ( ID: {{question_id}} @{{publish_time|date('Y年m月d日 @H:i:s')}})",
+                        "default": "",
+                        "multiple": "",
+                        "api": "",
+                        "cancel": "",
+                        "cancelable": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "用户ID",
+                    "name": "user_id",
+                    "type": "select-remote",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "table": "user",
+                        "prefix": "xpmsns_user_",
+                        "model": "\\Xpmsns\\User\\Model\\User",
+                        "fields": [
+                            "user_id",
+                            "name",
+                            "nickname",
+                            "mobile"
+                        ],
+                        "option": "user_id",
+                        "selectedInline": "",
+                        "style": "{{name ? name : nickname }} ( ID: {{user_id}}  手机: {{mobile}})",
+                        "default": "",
+                        "multiple": "",
+                        "api": "",
+                        "cancel": "",
+                        "cancelable": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "正文",
+                    "name": "content",
+                    "type": "summernote",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "default": "",
+                        "height": "",
+                        "maxHeight": "",
+                        "api": "",
+                        "minHeight": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "摘要",
+                    "name": "summary",
+                    "type": "textarea",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "default": "",
+                        "rows": "4",
+                        "autoheight": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "发布时间",
+                    "name": "publish_time",
+                    "type": "datetime-input",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "default": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "围观积分",
+                    "name": "coin_view",
+                    "type": "input",
+                    "placeholder": "需要付费围观才可以查看",
+                    "helper": "单位:个",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "default": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "围观金额",
+                    "name": "money_view",
+                    "type": "input",
+                    "placeholder": "需要付费围观才可以查看",
+                    "helper": "单位:分",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "default": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "访问策略",
+                    "name": "policies",
+                    "type": "radio",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "option": "公开=public,仅提问者可见=poster-only,付费用户可见=paid-only",
+                        "default": "public"
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "访问策略明细",
+                    "name": "policies_detail",
+                    "type": "json-editor",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "default": "",
+                        "mode": "",
+                        "rows": "",
+                        "autoheight": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "优先级",
+                    "name": "priority",
+                    "type": "input",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "default": "9999"
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "浏览量",
+                    "name": "view_cnt",
+                    "type": "input",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "1",
+                    "attr": {
+                        "default": "0"
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "赞同量",
+                    "name": "agree_cnt",
+                    "type": "input",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "1",
+                    "attr": {
+                        "default": "0"
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "获得积分",
+                    "name": "coin",
+                    "type": "input",
+                    "placeholder": "",
+                    "helper": "单位: 个",
+                    "exp": "",
+                    "readonly": "1",
+                    "attr": {
+                        "default": "0"
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "获得金额",
+                    "name": "money",
+                    "type": "input",
+                    "placeholder": "",
+                    "helper": "单位: 分",
+                    "exp": "",
+                    "readonly": "1",
+                    "attr": {
+                        "default": "0"
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "是否匿名",
+                    "name": "anonymous",
+                    "type": "radio",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "option": "不匿名=0, 匿名=1",
+                        "default": "0"
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "是否采纳",
+                    "name": "accepted",
+                    "type": "radio",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "option": "暂未采纳=0,采纳=1 ",
+                        "default": "0"
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "状态",
+                    "name": "status",
+                    "type": "radio",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "option": "开放=opened, 关闭=closed,封禁=forbidden,草稿=drafted",
+                        "default": "opened"
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "修改历史",
+                    "name": "history",
+                    "type": "json-editor",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "1",
+                    "attr": {
+                        "default": "",
+                        "mode": "",
+                        "rows": "",
+                        "autoheight": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                }
+            ],
+            "jscode": [
+                ""
+            ],
+            "undefined": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ]
+        },
+        "list": {
+            "keyword_param": "keyword",
+            "keyword": [
+                "name=answer_id",
+                "name=question_id",
+                "name=summary",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=name&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=nickname&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CQanda%5CModel%5CQuestion&name=title&table=question&prefix=xpmsns_qanda_&alias=question&type=leftJoin"
+            ],
+            "jscode": [
+                ""
+            ],
+            "conditions": [
+                {
+                    "or": "0",
+                    "field": "name=answer_id",
+                    "type": "=",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=question_id",
+                    "type": "=",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=user_id",
+                    "type": "=",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=publish_time",
+                    "type": ">=",
+                    "cname": "发布时间大于",
+                    "param": "after",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=publish_time",
+                    "type": "<=",
+                    "cname": "发布时间小于",
+                    "param": "before",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=coin",
+                    "type": ">",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=money",
+                    "type": ">",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=coin_view",
+                    "type": ">",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=money_view",
+                    "type": ">",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=policies",
+                    "type": "=",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=accepted",
+                    "type": "=",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=answer_id",
+                    "type": "not-in",
+                    "cname": "不包含",
+                    "param": "exclude",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=status",
+                    "type": "=",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                }
+            ],
+            "orderby": [
+                {
+                    "field": "name=view_cnt",
+                    "type": "desc",
+                    "cname": "浏览数量倒序",
+                    "param": "view_desc"
+                },
+                {
+                    "field": "name=agree_cnt",
+                    "type": "desc",
+                    "cname": "赞同数量倒序",
+                    "param": "agree_desc"
+                },
+                {
+                    "field": "name=publish_time",
+                    "type": "desc",
+                    "cname": "发布时间倒序",
+                    "param": "publish_desc"
+                },
+                {
+                    "field": "name=publish_time",
+                    "type": "asc",
+                    "cname": "发布时间正序",
+                    "param": "publish_asc"
+                },
+                {
+                    "field": "name=priority",
+                    "type": "asc",
+                    "cname": "优先级正序",
+                    "param": "priority_asc"
+                }
+            ],
+            "statusby": [
+                {
+                    "name": "name=status",
+                    "cname": "状态",
+                    "status": "开放=opened|success, 关闭=closed|danger, 封禁=forbidden|danger, 草稿=drafted|muted"
+                },
+                {
+                    "name": "name=policies",
+                    "cname": "访问策略",
+                    "status": "公开=public|success,仅提问者可见=poster-only|danger,付费用户可见=paid-only|warning"
+                },
+                {
+                    "name": "name=accepted",
+                    "cname": "是否采纳",
+                    "status": "暂未采纳=0|muted,已采纳=1|succes"
+                }
+            ],
+            "columns": [
+                {
+                    "fields": [
+                        "name=answer_id"
+                    ],
+                    "cname": "",
+                    "filter": "",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "model=%5CXpmsns%5CQanda%5CModel%5CQuestion&name=title&table=question&prefix=xpmsns_qanda_&alias=question&type=leftJoin"
+                    ],
+                    "cname": "提问",
+                    "filter": "{{question_title}}",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "model=%5CXpmsns%5CUser%5CModel%5CUser&name=name&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                        "model=%5CXpmsns%5CUser%5CModel%5CUser&name=nickname&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin"
+                    ],
+                    "cname": "用户",
+                    "filter": "{{user_name ? user_name : user_nickname}}",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "name=view_cnt"
+                    ],
+                    "cname": "",
+                    "filter": "",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "name=agree_cnt"
+                    ],
+                    "cname": "",
+                    "filter": "",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "name=policies"
+                    ],
+                    "cname": "",
+                    "filter": "",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "name=accepted"
+                    ],
+                    "cname": "",
+                    "filter": "",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "name=status"
+                    ],
+                    "cname": "",
+                    "filter": "",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "name=created_at",
+                        "name=updated_at"
+                    ],
+                    "cname": "更新时间",
+                    "filter": "{{ update_at  ? update_at | date('Y年m月d日 @H:i') : created_at | date('Y年m月d日 @H:i') }}",
+                    "default": ""
+                }
+            ]
+        },
+        "api": {
+            "getfields": "name=answer_id",
+            "createfields": "name=answer_id",
+            "uploadparam": "",
+            "methods": [
+                {
+                    "name": "",
+                    "cname": "",
+                    "source": ""
+                }
+            ],
+            "getstatus": "0",
+            "createstatus": "0",
+            "updatestatus": "0",
+            "deletestatus": "0",
+            "searchstatus": "0",
+            "uploadstatus": "0",
+            "getkey": [
+                "name=answer_id"
+            ],
+            "updatekey": [
+                "name=answer_id"
+            ],
+            "deletekey": [
+                "name=answer_id"
+            ],
+            "searchfields": [
+                "name=answer_id",
+                "name=user_id",
+                "name=content",
+                "name=view_cnt",
+                "name=agree_cnt",
+                "name=coin",
+                "name=money",
+                "name=coin_view",
+                "name=money_view",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=name&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=nickname&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CQanda%5CModel%5CQuestion&name=title&table=question&prefix=xpmsns_qanda_&alias=question&type=leftJoin"
+            ],
+            "getauth": {
+                "sign": "",
+                "secret": "",
+                "image": ""
+            },
+            "createauth": {
+                "sign": "",
+                "secret": "",
+                "image": ""
+            },
+            "updateauth": {
+                "sign": "",
+                "secret": "",
+                "image": ""
+            },
+            "deleteauth": {
+                "sign": "",
+                "secret": "",
+                "image": ""
+            },
+            "searchauth": {
+                "sign": "",
+                "secret": "",
+                "image": ""
+            },
+            "uploadauth": {
+                "sign": "",
+                "secret": "1",
+                "image": ""
+            }
+        }
+    },
+    "process": {
+        "general": "saved",
+        "struct": "saved",
+        "links": "saved",
+        "detail": "saved",
+        "list": "saved",
+        "api": "saved"
+    },
+    "next": null,
+    "prev": null,
+    "templete": {
+        "org": "xpmsns",
+        "name": "model",
+        "slug": "xpmsns_model",
+        "cname": "XpmSE 应用数据模型母版",
+        "version": "1.0.0",
+        "summary": "生成 XpmSE 应用数据模型。涵盖资源模型CURD、API CURD和标准资源管理界面。"
+    }
+}
