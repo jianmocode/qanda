@@ -44,7 +44,7 @@ class Question extends Api {
         }
 
 		// 读取字段
-		$select = empty($data['select']) ? ["question.question_id","question.user_id","question.title","question.summary","question.cover", "question.content", "question.category_ids","question.series_ids","question.tags","question.publish_time","question.coin","question.money","question.coin_view","question.money_view","question.policies","question.policies_detail","question.anonymous","question.view_cnt","question.agree_cnt","question.answer_cnt","question.priority","question.status","question.created_at","question.updated_at","user.name","user.nickname","user.headimgurl","user.follower_cnt","user.following_cnt","user.question_cnt","user.answer_cnt","category.name","series.name"] : $data['select'];
+		$select = empty($data['select']) ? ["question.question_id","question.user_id","question.title","question.summary","question.cover", "question.content", "question.category_ids","question.series_ids","question.tags","question.publish_time","question.coin","question.money","question.coin_view","question.money_view","question.policies","question.policies_detail","question.anonymous","question.view_cnt","question.agree_cnt","question.answer_cnt","question.priority","question.status","question.created_at","question.updated_at","user.name","user.nickname","user.bio","user.headimgurl","user.follower_cnt","user.following_cnt","user.question_cnt","user.answer_cnt","category.name","series.name"] : $data['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
@@ -321,7 +321,7 @@ class Question extends Api {
 		$data = array_merge( $query, $data );
 
 		// 读取字段
-		$select = empty($data['select']) ? ["question.question_id","question.user_id","question.title","question.summary","question.cover","question.category_ids","question.series_ids","question.tags","question.publish_time","question.coin","question.money","question.coin_view","question.money_view","question.policies","question.policies_detail","question.anonymous","question.view_cnt","question.agree_cnt","question.answer_cnt","question.priority","question.status","question.created_at","question.updated_at","user.name","user.nickname","user.headimgurl","user.follower_cnt","user.following_cnt","user.question_cnt","user.answer_cnt","category.name","series.name"] : $data['select'];
+		$select = empty($data['select']) ? ["question.question_id","question.user_id","question.title","question.summary","question.cover","question.category_ids","question.series_ids","question.tags","question.publish_time","question.coin","question.money","question.coin_view","question.money_view","question.policies","question.policies_detail","question.anonymous","question.view_cnt","question.agree_cnt","question.answer_cnt","question.priority","question.status","question.created_at","question.updated_at","user.name","user.nickname","user.bio","user.headimgurl","user.follower_cnt","user.following_cnt","user.question_cnt","user.answer_cnt","category.name","series.name"] : $data['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}

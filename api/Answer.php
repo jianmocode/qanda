@@ -187,7 +187,7 @@ class Answer extends Api {
 		$data = array_merge( $query, $data );
 
 		// 读取字段
-		$select = empty($data['select']) ? ["question.question_id","question.title","answer.user_id","answer.content","answer.accepted","answer.status","answer.status","answer.publish_time","user.name","user.nickname","user.headimgurl","user.follower_cnt","user.following_cnt","user.question_cnt","user.answer_cnt"] : $data['select'];
+		$select = empty($data['select']) ? ["question.question_id","question.title","answer.user_id","answer.content","answer.accepted","answer.status","answer.status","answer.publish_time","user.name","user.nickname","user.bio","user.headimgurl","user.follower_cnt","user.following_cnt","user.question_cnt","user.answer_cnt"] : $data['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
