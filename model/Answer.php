@@ -121,6 +121,57 @@ class Answer extends Model {
         return $map;
     }
 
+
+    /**
+     * 查询用户回答数量
+     * @param string $my_id 用户ID 
+     * @return int 用户提问总数
+     */
+    function countByUserId( string $my_id ){
+        $qb = $this->query();
+        $cnt = $qb->where("user_id", "=", $my_id )->count("_id");
+        return intval( $cnt );
+    }
+
+    /**
+     * 查询提问回答数量
+     * @param string $question_id 提问ID 
+     * @return int 用户提问总数
+     */
+    function countByQuestionId( string $question_id ){
+        $qb = $this->query();
+        $cnt = $qb->where("question_id", "=", $question_id )->count("_id");
+        return intval( $cnt );
+    }
+
+    /**
+     * 发布一个回答
+     * @param string $my_id 发布者用户ID 
+     * @return array $question 问答数据结构
+     */
+    function createByUserId(string $my_id, $data ) {
+        $data["user_id"] = $my_id;
+        $resp = $this->create($data);
+
+        if ( $resp ) {
+            
+            // 更新用户回答统计
+            $cnt = $this->countByUserId( $my_id );
+            $u = new \Xpmsns\User\Model\User;
+            $u->runSql("update {{table}} SET `answer_cnt`=? WHERE `user_id`=? LIMIT 1", false, [ $cnt, $my_id ] );
+            $resp["user_answer_cnt"] = $cnt;
+
+            // 更新问题回答统计
+            $question_id = $data["question_id"];
+            $cnt = $this->countByQuestionId( $question_id );
+            $q = new Question();
+            $q->runSql("update {{table}} SET `answer_cnt`=? WHERE `question_id`=? LIMIT 1", false, [ $cnt, $question_id ] );
+            $resp["question_answer_cnt"] = $cnt;
+        }
+
+        return $resp;
+    }
+
     
     // @KEEP END
 
@@ -183,6 +234,16 @@ class Answer extends Model {
      
 		$fileFields = []; 
 
+        // @KEEP BEGIN
+        if ( array_key_exists('user_headimgurl', $rs ) ) {
+
+            if ( is_string($rs["user_headimgurl"])  && !empty($rs["user_headimgurl"])) {
+                $rs["user_headimgurl"] = json_decode( $rs["user_headimgurl"], true);   
+            }
+            array_push($fileFields, "user_headimgurl");
+        }
+        // @KEEP END
+        
         // 处理图片和文件字段 
         $this->__fileFields( $rs, $fileFields );
 
@@ -638,7 +699,7 @@ class Answer extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["answer.answer_id","question.title","user.name","user.nickname","answer.view_cnt","answer.agree_cnt","answer.policies","answer.accepted","answer.status","answer.created_at","answer.updated_at"] : $query['select'];
+		$select = empty($query['select']) ? ["answer.answer_id","question.title","user.name","user.nickname","user.headimgurl","user.follower_cnt","user.following_cnt","user.question_cnt","user.answer_cnt","answer.view_cnt","answer.agree_cnt","answer.policies","answer.accepted","answer.status","answer.created_at","answer.updated_at"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
