@@ -699,7 +699,7 @@ class Answer extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["answer.user_id","answer.answer_id","question.title","user.name","user.nickname","user.headimgurl","user.follower_cnt","user.following_cnt","user.question_cnt","user.answer_cnt","answer.view_cnt","answer.agree_cnt","answer.policies","answer.accepted","answer.status","answer.created_at","answer.updated_at"] : $query['select'];
+		$select = empty($query['select']) ? ["answer.user_id","answer.answer_id","answer.summary","question.title","user.name","user.nickname","user.headimgurl","user.follower_cnt","user.following_cnt","user.question_cnt","user.answer_cnt","answer.view_cnt","answer.agree_cnt","answer.policies","answer.accepted","answer.status","answer.created_at","answer.updated_at"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
