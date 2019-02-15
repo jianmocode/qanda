@@ -1038,7 +1038,7 @@ class Question extends Model {
 		$perpage = array_key_exists('perpage', $query) ?  intval( $query['perpage']) : 20;
 
 		// 读取数据并分页
-		$questions = $qb->select( $select )->pgArray($perpage, ['question._id'], 'page', $page);
+        $questions = $qb->select( $select )->pgArray($perpage, ['question._id'], 'page', $page);
 
   		$category_ids = []; // 读取 inWhere category 数据
  		$series_ids = []; // 读取 inWhere series 数据
