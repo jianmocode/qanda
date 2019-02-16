@@ -206,8 +206,16 @@ class Question extends Api {
         }
 
         $qu = new \Xpmsns\Qanda\Model\Question;
-        return $qu->createByUserId( $user_id, $data );
+        $question = $qu->createByUserId( $user_id, $data );
 
+        // 更新标签统计 ( 下一版转移到触发事件 )
+        if ( is_array($question["tags"]) && !empty($question["tags"]) ){
+            try{
+                \Xpmsns\Pages\Model\Tag::updateCnts( $question["tags"], "question");
+            } catch( Excp $e ) { $e->log(); }
+        }
+
+        return $question;
     }
 
 
