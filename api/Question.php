@@ -71,11 +71,14 @@ class Question extends Api {
         // 查询回答列表
         if ( $data["withanswer"] ) {
             $an = new \Xpmsns\Qanda\Model\Answer;
-            $data["select"] = $data["answer_select"];
-
+            $answer_query = $data;
+            unset($answer_query["answer_id"]);
+            $answer_query["select"] = $data["answer_select"];
+            $answer_query["status"] = $data["answer_status"];
+            
             // 查询置顶的回答
             if ( !empty($data["answer_id"]) ) {
-                $answer = $an->getByAnswerId( $data["answer_id"],  $data["select"]);
+                $answer = $an->getByAnswerId( $data["answer_id"],  $answer_query["select"]);
                 if ( !empty($user["user_id"]) && $data["withagree"] == 1 ) {
                     $rows = [ $answer ];
                     $an->withAgree( $rows, $user["user_id"] );
@@ -90,11 +93,10 @@ class Question extends Api {
                 }
 
                 $question["answer"] = $answer;
-                $data["exclude"] = [$data["answer_id"]];
-                unset($data["answer_id"]);
+                $answer_query["exclude"] = [$data["answer_id"]];
             }
 
-            $answers = $an->search( $data );
+            $answers = $an->search( $answer_query );
             if ( !empty($user["user_id"]) && $data["withagree"] == 1 ) {
                 $an->withAgree( $answers["data"], $user["user_id"] );
             }
