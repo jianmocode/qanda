@@ -108,11 +108,49 @@ class Question extends Api {
 
             $question["answers"] = $answers;
         }
-        
+
+        // 标记为已打开
+        try {  
+            $response = $qu->opened( $question["question_id"] ); 
+        } catch(Excp $e) { $e->log(); }
+
+        // 触发打开提问行为
+        try {  
+            \Xpmsns\User\Model\Behavior::trigger("xpmsns/qanda/question/open", [
+                "question_id"=>$question["question_id"],
+                "inviter" => \Xpmsns\User\Model\User::inviter(),
+                "time"=>time()
+            ]);
+        } catch(Excp $e) { $e->log(); }
         
         return $question;
         
     }
+
+
+    /**
+     * 标记为离开文章(一般为当浏览器关闭/小程序/APP页面切换时调用)
+     * @param string $articleId 文章ID
+     */
+    protected function leave( $query ){
+       
+        $question_id = $query['question_id'];
+        $que = new \Xpmsns\Qanda\Model\Question;
+        // 标记为关闭并记录阅读时长
+        $duration = $que->closed( $question_id );
+
+        try {  // 触发关闭文章行为
+            \Xpmsns\User\Model\Behavior::trigger("xpmsns/qanda/question/close", [
+                "question_id"=>$question_id,
+                "inviter" => \Xpmsns\User\Model\User::inviter(),
+                "duration" => $duration,
+                "time"=>time()
+            ]);
+        } catch(Excp $e) { $e->log(); }
+
+        return $duration;
+    }
+
 
     /**
      * 发布提问

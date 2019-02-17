@@ -66,6 +66,35 @@ class Question extends Model {
 	 */
 
     // @KEEP BEGIN
+    /**
+     * 标记为打开，并记录打开时刻
+     * @param string $question_id 提问ID
+     * @return bool 如已打开返回false , 新打开返回true
+     */
+    function opened( $question_id ) {
+        @session_start();
+        if ( !empty($_SESSION["question_opened_{$question_id}"]) ) {
+            return false;
+        }
+
+        $_SESSION["question_opened_{$question_id}"] = time();
+        return true;
+    }
+
+    /**
+     * 标记为关闭，并计算停留时长
+     * @param string $question_id 提问ID
+     * @return int $duration 停留时长
+     */
+    function closed( $question_id ) {
+        @session_start();
+        $start = $_SESSION["question_opened_{$question_id}"];
+        unset( $_SESSION["question_opened_{$question_id}"] );
+        if ( empty($start) ) {
+            return 0;
+        }
+        return time()-intval($start);
+    }
 
 	/**
 	 * 根据内容分析摘要
@@ -142,7 +171,6 @@ class Question extends Model {
     }
 
 
-
     /**
      * 查询用户提问数量
      * @param string $my_id 用户ID 
@@ -171,6 +199,111 @@ class Question extends Model {
         }
 
         return $resp;
+    }
+
+
+    /**
+     * 问答初始化( 注册行为/注册任务/设置默认值等... )
+     */
+    public function __defaults() {
+
+        // 注册任务
+        $tasks = [
+        ];
+
+        // 注册行为
+        $behaviors =[
+            [
+                "name" => "发布提问", "slug"=>"xpmsns/qanda/question/create",
+                "intro" =>  "本行为当用户发布提问后触发",
+                "params" => ["question_id"=>"提问ID", "user_id"=>"用户ID"],
+                "status" => "online",
+            ],[
+                "name" => "打开提问", "slug"=>"xpmsns/qanda/question/open",
+                "intro" =>  "本行为当用户打开提问后触发",
+                "params" => ["question_id"=>"提问ID", "time"=>"打开时刻", "inviter"=>"邀请者信息"],
+                "status" => "online",
+            ],[
+                "name" => "关闭提问", "slug"=>"xpmsns/qanda/question/close",
+                "intro" =>  "本行为当用户关闭提问(离开提问页面)后触发",
+                "params" => ["question_id"=>"提问ID", "time"=>"关闭时刻", "duration"=>"停留时长", "inviter"=>"邀请者信息"],
+                "status" => "online",
+            ]
+        ];
+
+        // 订阅行为( 响应任务处理 )
+        $subscribers =[
+            [
+                "name" => "更新提问阅读量脚本",
+                "behavior_slug"=>"xpmsns/qanda/question/open",
+                "outer_id" => "question-updateViewsScript",
+                "origin" => "question",
+                "timeout" => 30,
+                "handler" => ["class"=>"\\xpmsns\\qanda\\model\\question", "method"=>"updateViewsScript"],
+                "status" => "on",
+            ],[
+                "name" => "更新提问赞同量脚本",
+                "behavior_slug"=>"xpmsns/comment/agree/create",
+                "outer_id" => "question-updateAgreesScript",
+                "origin" => "question",
+                "timeout" => 30,
+                "handler" => ["class"=>"\\xpmsns\\qanda\\model\\question", "method"=>"updateAgreesScript"],
+                "status" => "on",
+            ]
+        ];
+
+        $t = new \Xpmsns\User\Model\Task();
+        $b = new \Xpmsns\User\Model\Behavior();
+        $s = new \Xpmsns\User\Model\Subscriber();
+
+        foreach( $tasks as $task ){
+            try { $t->create($task); } catch( Excp $e) { $e->log(); }
+        }
+
+        foreach( $behaviors as $behavior ){
+            try { $b->create($behavior); } catch( Excp $e) { $e->log(); }
+        }
+        foreach( $subscribers as $subscriber ){
+            try { $s->create($subscriber); } catch( Excp $e) { $e->log(); }
+        }
+    }
+
+    /**
+     * 订阅器: 更新提问阅读量脚本 (打开提问行为发生时, 触发此函数, 可在后台暂停或关闭)
+     * @param array $behavior  行为(打开提问)数据结构
+     * @param array $subscriber  订阅者(更新提问阅读量脚本) 数据结构  ["outer_id"=>"question-updateViewsScript...", "origin"=>"question" ... ]
+     * @param array $data  行为数据 ["question_id"=>"提问ID", "time"=>"打开时刻", "inviter"=>"邀请者信息"] ...
+     * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
+     */
+    public function updateViewsScript( $behavior, $subscriber, $data, $env ) {
+        $question_id = $data["question_id"];
+        if ( empty( $question_id ) ) {
+            return;
+        }
+
+        $this->updateBy( 'question_id', [
+            "question_id"=>$question_id,
+            "view_cnt" => 'DB::RAW(IFNULL(`view_cnt`, 0) + 1)'
+        ]);
+    }
+
+    /**
+     * 订阅器: 更新提问赞同量脚本 (用户赞同行为发生时, 触发此函数, 可在后台暂停或关闭)
+     * @param array $behavior  行为(用户赞同)数据结构
+     * @param array $subscriber  订阅者(更新提问赞同量脚本) 数据结构  ["outer_id"=>"question-updateViewsScript...", "origin"=>"question" ... ]
+     * @param array $data  行为数据 ["question_id"=>"提问ID", "time"=>"打开时刻", "inviter"=>"邀请者信息"] ...
+     * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
+     */
+    public function updateAgreesScript( $behavior, $subscriber, $data, $env ) {
+        $question_id = $data["question_id"];
+        if ( empty( $question_id ) ) {
+            return;
+        }
+
+        $this->updateBy( 'question_id', [
+            "question_id"=>$question_id,
+            "agree_cnt" => 'DB::RAW(IFNULL(`agree_cnt`, 0) + 1)'
+        ]);
     }
     // @KEEP END
 
