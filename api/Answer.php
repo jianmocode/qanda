@@ -208,16 +208,32 @@ class Answer extends Api {
         }
 
         return $resp;
-	}
+    }
+    
+
+    /**
+     * 标记为离开回答(一般为当浏览器关闭/小程序/APP页面切换时调用)
+     * @param string $answer_id 回答ID
+     */
+    protected function leave( $query ){
+       
+        $answer_id = $query['answer_id'];
+        $ans = new \Xpmsns\Qanda\Model\Answer;
+        // 标记为关闭并记录阅读时长
+        $duration = $ans->closed( $answer_id );
+
+        try {  // 触发关闭文章行为
+            \Xpmsns\User\Model\Behavior::trigger("xpmsns/qanda/answer/close", [
+                "answer_id"=>$answer_id,
+                "inviter" => \Xpmsns\User\Model\User::inviter(),
+                "duration" => $duration,
+                "time"=>time()
+            ]);
+        } catch(Excp $e) { $e->log(); }
+
+        return $duration;
+    }
 
     // @KEEP END
-
-
-
-
-
-
-
-
 
 }

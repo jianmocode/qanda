@@ -94,6 +94,21 @@ class Question extends Api {
 
                 $question["answer"] = $answer;
                 $answer_query["exclude"] = [$data["answer_id"]];
+
+                // 将回答为已打开
+                try {  
+                    $response = $an->opened( $answer["answer_id"] ); 
+                } catch(Excp $e) { $e->log(); }
+
+                // 触发打开回答行为
+                try {  
+                    \Xpmsns\User\Model\Behavior::trigger("xpmsns/qanda/answer/open", [
+                        "answer_id"=>$answer["answer_id"],
+                        "inviter" => \Xpmsns\User\Model\User::inviter(),
+                        "time"=>time()
+                    ]);
+                } catch(Excp $e) { $e->log(); }
+                
             }
 
             $answers = $an->search( $answer_query );
@@ -129,8 +144,8 @@ class Question extends Api {
 
 
     /**
-     * 标记为离开文章(一般为当浏览器关闭/小程序/APP页面切换时调用)
-     * @param string $articleId 文章ID
+     * 标记为离开提问(一般为当浏览器关闭/小程序/APP页面切换时调用)
+     * @param string $question_id 提问ID
      */
     protected function leave( $query ){
        
