@@ -203,7 +203,7 @@ class Question extends Model {
 
 
     /**
-     * 问答初始化( 注册行为/注册任务/设置默认值等... )
+     * 提问初始化( 注册行为/注册任务/设置默认值等... )
      */
     public function __defaults() {
 
@@ -291,20 +291,24 @@ class Question extends Model {
      * 订阅器: 更新提问赞同量脚本 (用户赞同行为发生时, 触发此函数, 可在后台暂停或关闭)
      * @param array $behavior  行为(用户赞同)数据结构
      * @param array $subscriber  订阅者(更新提问赞同量脚本) 数据结构  ["outer_id"=>"question-updateViewsScript...", "origin"=>"question" ... ]
-     * @param array $data  行为数据 ["question_id"=>"提问ID", "time"=>"打开时刻", "inviter"=>"邀请者信息"] ...
+     * @param array $data  行为数据 ["agree_id"=>"赞同ID", "user_id"=>"用户ID", "outer_id"=>"资源ID", "origin"=>"来源", "url"=>"地址", "param"=>"参数", "origin_outer_id"=>"赞同唯一ID"],
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
     public function updateAgreesScript( $behavior, $subscriber, $data, $env ) {
-        $question_id = $data["question_id"];
+        $origin = $data["origin"];
+        if ( $origin != "question" ) {
+            return;
+        }
+        $question_id = $data["outer_id"];
         if ( empty( $question_id ) ) {
             return;
         }
-
         $this->updateBy( 'question_id', [
             "question_id"=>$question_id,
-            "agree_cnt" => 'DB::RAW(IFNULL(`agree_cnt`, 0) + 1)'
+            "agree_cnt" => \Xpmsns\Comment\Model\Agree::count($answer_id, "question")
         ]);
     }
+    
     // @KEEP END
 
 

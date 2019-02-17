@@ -172,6 +172,146 @@ class Answer extends Model {
         return $resp;
     }
 
+    /**
+     * 提问初始化( 注册行为/注册任务/设置默认值等... )
+     */
+    public function __defaults() {
+
+        // 注册任务
+        $tasks = [
+        ];
+
+        // 注册行为
+        $behaviors =[
+            [
+                "name" => "发布回答", "slug"=>"xpmsns/qanda/answer/create",
+                "intro" =>  "本行为当用户发布提问后触发",
+                "params" => ["question_id"=>"提问ID","answer_id"=>"回答ID", "user_id"=>"用户ID"],
+                "status" => "online",
+            ],[
+                "name" => "打开回答", "slug"=>"xpmsns/qanda/answer/open",
+                "intro" =>  "本行为当用户打开回答后触发",
+                "params" => ["question_id"=>"提问ID","answer_id"=>"回答ID", "time"=>"打开时刻", "inviter"=>"邀请者信息"],
+                "status" => "online",
+            ],[
+                "name" => "关闭回答", "slug"=>"xpmsns/qanda/answer/close",
+                "intro" =>  "本行为当用户关闭回答(离开提问页面)后触发",
+                "params" => ["question_id"=>"提问ID","answer_id"=>"回答ID",  "time"=>"关闭时刻", "duration"=>"停留时长", "inviter"=>"邀请者信息"],
+                "status" => "online",
+            ]
+        ];
+
+        // 订阅行为( 响应任务处理 )
+        $subscribers =[
+            [
+                "name" => "更新回答阅读量脚本",
+                "behavior_slug"=>"xpmsns/qanda/question/open",
+                "outer_id" => "answer-updateViewsScript",
+                "origin" => "answer",
+                "timeout" => 30,
+                "handler" => ["class"=>"\\xpmsns\\qanda\\model\\answer", "method"=>"updateViewsScript"],
+                "status" => "on",
+            ],[
+                "name" => "更新回答赞同量脚本",
+                "behavior_slug"=>"xpmsns/comment/agree/create",
+                "outer_id" => "answer-updateAgreesScript",
+                "origin" => "answer",
+                "timeout" => 30,
+                "handler" => ["class"=>"\\xpmsns\\qanda\\model\\answer", "method"=>"updateAgreesScript"],
+                "status" => "on",
+            ]
+        ];
+
+        $t = new \Xpmsns\User\Model\Task();
+        $b = new \Xpmsns\User\Model\Behavior();
+        $s = new \Xpmsns\User\Model\Subscriber();
+
+        foreach( $tasks as $task ){
+            try { $t->create($task); } catch( Excp $e) { $e->log(); }
+        }
+
+        foreach( $behaviors as $behavior ){
+            try { $b->create($behavior); } catch( Excp $e) { $e->log(); }
+        }
+        foreach( $subscribers as $subscriber ){
+            try { $s->create($subscriber); } catch( Excp $e) { $e->log(); }
+        }
+    }
+
+    /**
+     * 订阅器: 更新回答阅读量脚本 (打开回答行为发生时, 触发此函数, 可在后台暂停或关闭)
+     * @param array $behavior  行为(打开回答)数据结构
+     * @param array $subscriber  订阅者(更新回答阅读量脚本) 数据结构  ["outer_id"=>"answer-updateViewsScript...", "origin"=>"answer" ... ]
+     * @param array $data  行为数据 ["question_id"=>"提问ID", "answer_id"=>"回答ID", "time"=>"打开时刻", "inviter"=>"邀请者信息"] ...
+     * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
+     */
+    public function updateViewsScript( $behavior, $subscriber, $data, $env ) {
+        $answer_id = $data["answer_id"];
+        if ( empty( $question_id ) ) {
+            return;
+        }
+
+        $this->updateBy( 'answer_id', [
+            "answer_id"=>$answer_id,
+            "view_cnt" => 'DB::RAW(IFNULL(`view_cnt`, 0) + 1)'
+        ]);
+    }
+
+    /**
+     * 订阅器: 更新回答赞同量脚本 (用户赞同行为发生时, 触发此函数, 可在后台暂停或关闭)
+     * @param array $behavior  行为(用户赞同)数据结构
+     * @param array $subscriber  订阅者(更新提问赞同量脚本) 数据结构  ["outer_id"=>"answer-updateViewsScript...", "origin"=>"answer" ... ]
+     * @param array $data  行为数据 ["agree_id"=>"赞同ID", "user_id"=>"用户ID", "outer_id"=>"资源ID", "origin"=>"来源", "url"=>"地址", "param"=>"参数", "origin_outer_id"=>"赞同唯一ID"],
+     * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
+     */
+    public function updateAgreesScript( $behavior, $subscriber, $data, $env ) {
+    
+        $origin = $data["origin"];
+        if ( $origin != "answer" ) {
+            return;
+        }
+
+        $answer_id = $data["outer_id"];
+        if ( empty( $answer_id ) ) {
+            return;
+        }
+
+        $this->updateBy( 'answer_id', [
+            "answer_id"=>$answer_id,
+            "agree_cnt" => \Xpmsns\Comment\Model\Agree::count($answer_id, "answer")
+        ]);
+    }
+
+    /**
+     * 标记为打开，并记录打开时刻
+     * @param string $question_id 提问ID
+     * @return bool 如已打开返回false , 新打开返回true
+     */
+    function opened( $answer_id ) {
+        @session_start();
+        if ( !empty($_SESSION["answer_opened_{$answer_id}"]) ) {
+            return false;
+        }
+
+        $_SESSION["answer_opened_{$answer_id}"] = time();
+        return true;
+    }
+
+    /**
+     * 标记为关闭，并计算停留时长
+     * @param string $question_id 提问ID
+     * @return int $duration 停留时长
+     */
+    function closed( $answer_id ) {
+        @session_start();
+        $start = $_SESSION["answer_opened_{$answer_id}"];
+        unset( $_SESSION["answer_opened_{$answer_id}"] );
+        if ( empty($start) ) {
+            return 0;
+        }
+        return time()-intval($start);
+    }
+
     
     // @KEEP END
 
