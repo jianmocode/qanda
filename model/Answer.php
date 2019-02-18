@@ -205,7 +205,7 @@ class Answer extends Model {
         $subscribers =[
             [
                 "name" => "更新回答阅读量脚本",
-                "behavior_slug"=>"xpmsns/qanda/question/open",
+                "behavior_slug"=>"xpmsns/qanda/answer/open",
                 "outer_id" => "answer-updateViewsScript",
                 "origin" => "answer",
                 "timeout" => 30,
