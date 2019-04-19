@@ -1,7 +1,7 @@
 {
     "org": "xpmsns",
     "name": "qanda",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "cname": "简墨知否",
     "image": {
         "color":"/static/icons/app-color.svg",

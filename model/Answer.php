@@ -177,6 +177,10 @@ class Answer extends Model {
      */
     public function __defaults() {
 
+        // 对接外部数据
+        $this->putColumn( 'outer_id', $this->type('string',  ['length'=>128, 'unique'=>true, "null"=>true]) );  // 外部账号ID
+        $this->putColumn( 'origin', $this->type('string',  ['length'=>128, "null"=>true]) );   // 外部来源ID
+
         // 注册任务
         $tasks = [
         ];

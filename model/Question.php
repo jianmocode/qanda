@@ -207,6 +207,29 @@ class Question extends Model {
      */
     public function __defaults() {
 
+        // 对接外部数据
+        $this->putColumn( 'outer_id', $this->type('string',  ['length'=>128, 'unique'=>true, "null"=>true]) );  // 外部账号ID
+        $this->putColumn( 'origin', $this->type('string',  ['length'=>128, "null"=>true]) );   // 外部来源ID
+
+        // 添加默认推荐项
+		$recommends = [
+            // 添加推荐位
+			["title"=>"推荐问答","slug"=>"qanda_recommend", "orderby"=>"view_cnt", "period"=>'weekly', "type"=>"auto", "ctype"=>"question"],
+		];
+		$rec = new \Xpmsns\Pages\Model\Recommend;
+		foreach ($recommends as $r ) {
+			try {
+				$rec->create($r);
+			} catch( Excp $e ){
+				// 1062
+				// echo $e->getCode();
+				// Duplicate entry ....
+				// echo $e->getMessage();
+				// unset( $r['title'] );
+				// $rec->saveBySlug($r);
+			}
+        }
+        
         // 注册任务
         $tasks = [
         ];
